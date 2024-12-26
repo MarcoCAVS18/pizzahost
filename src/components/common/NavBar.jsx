@@ -62,10 +62,7 @@ const NavBar = () => {
         <a href="/cart" className="hover:text-gray-600 transition duration-200">
           <ToggleCart />
         </a>
-        <a
-          href="/user"
-          className="hover:text-gray-600 transition duration-200"
-        >
+        <a href="/user" className="hover:text-gray-600 transition duration-200">
           <ToggleUser />
         </a>
       </div>
@@ -95,7 +92,7 @@ const NavBar = () => {
         <div className="lg:hidden fixed inset-0 bg-black/50 z-40">
           <div className="fixed top-0 left-0 right-0 bg-lightBeige shadow-lg overflow-y-auto animate-slideDown transform transition-transform duration-300">
             <div className="p-8 flex flex-col space-y-6 font-oldstyle">
-            <Logo />
+              <Logo />
 
               <a
                 href="/"
@@ -125,8 +122,8 @@ const NavBar = () => {
               <div className="flex items-center space-x-2">
                 <a href="/profile" className="hover:text-gray-600">
                   <ToggleUser />
+                  <span className="text-lg">Sign In / Sign Up</span>
                 </a>
-                <span className="text-lg">Sign In / Sign Up</span>
               </div>
             </div>
           </div>
