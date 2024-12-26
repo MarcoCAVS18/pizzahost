@@ -1,9 +1,14 @@
+// OtherExperience.jsx
+
 import React from "react";
 import SideCard from "./SideCard";
 import friesImage from "../../../assets/images/pizzas/prueba2.webp";
 import garlicKnotsImage from "../../../assets/images/pizzas/prueba2.webp";
 import dippingSaucesImage from "../../../assets/images/pizzas/prueba2.webp";
 import appImage from "../../../assets/images/pizzas/prueba2.webp";
+
+import { AnimationProvider } from "../../../context/ScrollAnimation/AnimationContext";
+import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
 
 const OtherExperience = () => {
   const cards = [
@@ -38,27 +43,37 @@ const OtherExperience = () => {
   ];
 
   return (
-    <section className="bg-darkRed py-16 px-8">
-      <div className="max-w-7xl mx-auto text-center">
-        <h2 className="text-beige font-oldstyle text-2xl">
-          Explore Our Sides
-        </h2>
-        <p className="text-white font-serif italic text-4xl mb-8">
-          Pair it with Perfection
-        </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {cards.map((card, index) => (
-            <SideCard
-              key={index}
-              image={card.image}
-              title={card.title}
-              subtitle={card.subtitle}
-              description={card.description}
-            />
-          ))}
+    <AnimationProvider>
+      <section className="bg-darkRed py-16 px-8">
+        <div className="max-w-7xl mx-auto text-center">
+          <ScrollAnimation delay={0}>
+            <h2 className="text-beige font-oldstyle text-2xl">
+              Explore Our Sides
+            </h2>
+          </ScrollAnimation>
+
+          <ScrollAnimation delay={200}>
+            <p className="text-white font-serif italic text-4xl mb-8">
+              Pair it with Perfection
+            </p>
+          </ScrollAnimation>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {cards.map((card, index) => (
+              <ScrollAnimation key={index} delay={400 + index * 200}>
+                <SideCard
+                  key={index}
+                  image={card.image}
+                  title={card.title}
+                  subtitle={card.subtitle}
+                  description={card.description}
+                />
+              </ScrollAnimation>
+            ))}
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </AnimationProvider>
   );
 };
 

@@ -1,3 +1,5 @@
+// Menu.jsx
+
 import React from 'react';
 
 const Menu = () => {

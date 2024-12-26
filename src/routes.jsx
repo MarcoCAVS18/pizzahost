@@ -5,7 +5,7 @@ import Menu from './pages/Menu';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import NotFound from './pages/NotFound';
-import Dashboard from './pages/UserDashboard';
+import UserLog from './pages/UserLog';
 
 const RoutesComponent = () => (
   <Routes>
@@ -13,8 +13,8 @@ const RoutesComponent = () => (
     <Route path="/menu" element={<Menu />} />
     <Route path="/cart" element={<Cart />} />
     <Route path="/checkout" element={<Checkout />} />
-    <Route path="/user" element={<Dashboard />} />
-    <Route path="*" element={<NotFound />} /> {/* Página 404 */}
+    <Route path="/user" element={<UserLog />} />
+    <Route path="*" element={<NotFound />} /> 
   </Routes>
 );
 

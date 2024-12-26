@@ -1,3 +1,5 @@
+// Button.jsx
+
 import clsx from "clsx";
 
 const Button = ({ text, onClick, className, variant = "primary" }) => {
