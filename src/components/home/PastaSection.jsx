@@ -1,8 +1,9 @@
 // PastaSection.jsx
 import React from "react";
 import Card from "../common/Card";
-import pizzaImage from "../../assets/images/pizzas/prueba2.webp";
-import primaryImage from "../../assets/images/EQgnndgsDnOFzMSzJxRuiI-4096x4096.webp";
+import pastaImage from "../../assets/images/pasta/pasta1.webp";
+import pastaImage2 from "../../assets/images/pasta/pasta2.webp";
+import primaryImage from "../../assets/images/pasta/pastaMain.webp";
 
 import { AnimationProvider } from "../../context/ScrollAnimation/AnimationContext";
 import ScrollAnimation from "../../context/ScrollAnimation/ScrollAnimation";
@@ -10,13 +11,13 @@ import ScrollAnimation from "../../context/ScrollAnimation/ScrollAnimation";
 const PastaSection = () => {
   const pastaOptions = [
     {
-      image: pizzaImage,
+      image: pastaImage,
       title: "The Classic",
       subtitle: "Classic Italian Flavors",
       buttonText: "Add to Cart",
     },
     {
-      image: pizzaImage,
+      image: pastaImage2,
       title: "The Pepperoni",
       subtitle: "A Classic Delight",
       buttonText: "Add to Cart",
