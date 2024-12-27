@@ -120,9 +120,9 @@ const NavBar = () => {
               </a>
               <hr />
               <div className="flex items-center space-x-2">
-                <a href="/profile" className="hover:text-gray-600">
+                <a href="/profile" className="flex items-center hover:text-gray-600">
                   <ToggleUser />
-                  <span className="text-lg">Sign In / Sign Up</span>
+                  <span className="text-lg ml-2">Sign In / Sign Up</span>
                 </a>
               </div>
             </div>
