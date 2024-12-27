@@ -1,13 +1,10 @@
 // Checkout.jsx
 
 import React from 'react';
+import Wait from '../components/common/Wait';
 
 const Checkout = () => {
-  return (
-    <div>
-      <h1>Checkout Page</h1>
-    </div>
-  );
+  return <Wait />;
 };
 
 export default Checkout;

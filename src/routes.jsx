@@ -6,12 +6,14 @@ import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import NotFound from './pages/NotFound';
 import UserLog from './pages/UserLog';
+import Wishlist from './pages/Wishlist';
 
 const RoutesComponent = () => (
   <Routes>
     <Route path="/" element={<Home />} />
     <Route path="/menu" element={<Menu />} />
     <Route path="/cart" element={<Cart />} />
+    <Route path="/wishlist" element={<Wishlist />} />
     <Route path="/checkout" element={<Checkout />} />
     <Route path="/user" element={<UserLog />} />
     <Route path="*" element={<NotFound />} /> 

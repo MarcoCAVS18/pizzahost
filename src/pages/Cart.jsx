@@ -1,13 +1,10 @@
 // Cart.jsx
+import Wait from "../components/common/Wait";
 
-import React from 'react';
+import React from "react";
 
 const Cart = () => {
-  return (
-    <div>
-      <h1>Cart Page</h1>
-    </div>
-  );
+  return <Wait />;
 };
 
 export default Cart;
