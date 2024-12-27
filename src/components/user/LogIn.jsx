@@ -37,7 +37,7 @@ const LogIn = () => {
             type="email"
             placeholder="Email"
             {...register('email')}
-            className="w-full px-4 md:px-6 py-3 bg-transparent border-b-2 border-gray-100 focus:border-darkRed focus:outline-none transition-colors"
+            className="w-full px-4 md:px-6 py-3 bg-transparent border-b-2 border-gray-300 focus:border-darkRed focus:outline-none transition-colors"
           />
           {errors.email && <span className="text-red-500 text-sm block mt-1">{errors.email.message}</span>}
         </div>
@@ -46,7 +46,7 @@ const LogIn = () => {
             type="password"
             placeholder="Password"
             {...register('password')}
-            className="w-full px-4 md:px-6 py-3 bg-transparent border-b-2 border-gray-100 focus:outline-none focus:border-darkRed transition-colors"
+            className="w-full px-4 md:px-6 py-3 bg-transparent border-b-2 border-gray-300 focus:outline-none focus:border-darkRed transition-colors"
           />
           {errors.password && <span className="text-red-500 text-sm block mt-1">{errors.password.message}</span>}
         </div>
