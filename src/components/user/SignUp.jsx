@@ -5,6 +5,9 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
+import { signUp } from '../../services/authService';
+
+
 const SignUp = () => {
   const signUpSchema = yup.object().shape({
     firstName: yup.string().required('First name is required'),
@@ -22,8 +25,13 @@ const SignUp = () => {
     resolver: yupResolver(signUpSchema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    try {
+      await signUp(data.email, data.password);
+      console.log('User signed up successfully');
+    } catch (error) {
+      console.error('Error during sign up:', error);
+    }
   };
 
   return (
