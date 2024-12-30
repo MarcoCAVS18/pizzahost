@@ -1,7 +1,18 @@
-// authService.js
-
+// src/services/authService.js
 import { initializeApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import { 
+  getAuth, 
+  createUserWithEmailAndPassword, 
+  signInWithEmailAndPassword, 
+  signOut,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  OAuthProvider,
+  sendPasswordResetEmail
+} from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -15,33 +26,144 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+// Providers
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+const appleProvider = new OAuthProvider('apple.com');
+
+// Email & Password Authentication
 export const signUp = async (email, password) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    return user;
+    return userCredential.user;
   } catch (error) {
-    console.error('Error during sign up:', error);
-    throw error;
+    throw new Error(error.message);
   }
 };
 
 export const logIn = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
-    return user;
+    return userCredential.user;
   } catch (error) {
-    console.error('Error during log in:', error);
-    throw error;
+    let errorMessage;
+    
+    switch (error.code) {
+      case 'auth/too-many-requests':
+        errorMessage = 'Access temporarily disabled due to many failed login attempts. Please try again later or reset your password.';
+        break;
+      case 'auth/wrong-password':
+        errorMessage = 'Incorrect password. Please try again.';
+        break;
+      case 'auth/user-not-found':
+        errorMessage = 'No account found with this email.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Invalid email address.';
+        break;
+      default:
+        errorMessage = error.message;
+    }
+    
+    throw new Error(errorMessage);
   }
 };
 
+// Social Authentication with Popup fallback to Redirect
+export const signInWithGoogle = async () => {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    return result.user;
+  } catch (error) {
+    if (error.code === 'auth/popup-closed-by-user' || 
+        error.code === 'auth/cancelled-popup-request' ||
+        error.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, googleProvider);
+      return null;
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const signInWithFacebook = async () => {
+  try {
+    const result = await signInWithPopup(auth, facebookProvider);
+    return result.user;
+  } catch (error) {
+    if (error.code === 'auth/popup-closed-by-user' || 
+        error.code === 'auth/cancelled-popup-request' ||
+        error.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, facebookProvider);
+      return null;
+    }
+    throw new Error(error.message);
+  }
+};
+
+export const signInWithApple = async () => {
+  try {
+    const result = await signInWithPopup(auth, appleProvider);
+    return result.user;
+  } catch (error) {
+    if (error.code === 'auth/popup-closed-by-user' || 
+        error.code === 'auth/cancelled-popup-request' ||
+        error.code === 'auth/popup-blocked') {
+      await signInWithRedirect(auth, appleProvider);
+      return null;
+    }
+    throw new Error(error.message);
+  }
+};
+
+// Handle Redirect Results
+export const handleRedirectResult = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result) {
+      return result.user;
+    }
+    return null;
+  } catch (error) {
+    throw new Error(error.message);
+  }
+};
+
+// Password Reset
+export const resetPassword = async (email) => {
+  try {
+    await sendPasswordResetEmail(auth, email, {
+      url: `${window.location.origin}/login`,
+    });
+  } catch (error) {
+    let errorMessage;
+    
+    switch (error.code) {
+      case 'auth/user-not-found':
+        errorMessage = 'No account found with this email address.';
+        break;
+      case 'auth/invalid-email':
+        errorMessage = 'Please enter a valid email address.';
+        break;
+      default:
+        errorMessage = error.message;
+    }
+    
+    throw new Error(errorMessage);
+  }
+};
+
+// Logout
 export const logOut = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    console.error('Error during log out:', error);
-    throw error;
+    throw new Error(error.message);
   }
 };
+
+// Auth state observer
+export const onAuthStateChanged = (callback) => {
+  return auth.onAuthStateChanged(callback);
+};
+
+export { auth };

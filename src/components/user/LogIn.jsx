@@ -4,7 +4,7 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
-import { FaGoogle, FaFacebook, FaApple } from 'react-icons/fa';
+import SocialLoginButtons from '../auth/SocialLoginButtons';
 
 import { logIn } from '../../services/authService';
 
@@ -75,21 +75,8 @@ const LogIn = () => {
         </div>
       </div>
 
-      {/* Social login buttons */}
-      <div className="space-y-4">
-        <button className="w-full bg-white text-gray-600 px-6 py-3 rounded-md flex items-center justify-center space-x-2 hover:bg-gray-100 transition duration-200">
-          <FaGoogle className="text-red-600" />
-          <span>Sign in with Google</span>
-        </button>
-        <button className="w-full bg-blue-600 text-white px-6 py-3 rounded-md flex items-center justify-center space-x-2 hover:bg-blue-700 transition duration-200">
-          <FaFacebook />
-          <span>Sign in with Facebook</span>
-        </button>
-        <button className="w-full bg-black text-white px-6 py-3 rounded-md flex items-center justify-center space-x-2 hover:bg-gray-800 transition duration-200">
-          <FaApple />
-          <span>Sign in with Apple</span>
-        </button>
-      </div>
+      <SocialLoginButtons />
+
     </div>
   );
 };

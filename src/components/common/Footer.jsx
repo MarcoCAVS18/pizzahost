@@ -7,7 +7,6 @@ const Footer = () => {
   return (
     <footer className="bg-green text-beige font-oldstyle py-24 px-8">
       <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-8">
-        {/* Logo y Copyright en la misma columna */}
         <div className="flex flex-col justify-between h-full space-y-6 col-span-2 sm:col-span-1">
           <div>
             <img src={logoFooter} alt="Pepperoni Pizzas & Dishes" className="h-10 sm:h-12" />
@@ -17,7 +16,6 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Explore */}
         <div>
           <h3 className="font-oldstyle text-lg sm:text-xl font-bold mb-2">Explore</h3>
           <ul className="space-y-1 sm:space-y-2">
@@ -28,7 +26,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Connect */}
         <div>
           <h3 className="font-oldstyle text-lg sm:text-xl font-bold mb-2">Connect</h3>
           <ul className="space-y-1 sm:space-y-2">
@@ -39,7 +36,6 @@ const Footer = () => {
           </ul>
         </div>
 
-        {/* Company */}
         <div>
           <h3 className="font-oldstyle text-lg sm:text-xl font-bold mb-2">Company</h3>
           <ul className="space-y-1 sm:space-y-2">

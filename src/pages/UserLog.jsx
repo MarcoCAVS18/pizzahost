@@ -16,7 +16,6 @@ const UserLog = () => {
               </div>
             </ScrollAnimation>
             
-            {/* Línea divisoria con mayor espaciado */}
             <div className="hidden md:flex items-center">
               <div className="h-full border-r-2 border-gray"></div>
             </div>
