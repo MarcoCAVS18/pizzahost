@@ -1,4 +1,5 @@
 // App.js
+
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { handleRedirectResult } from './services/authService';
@@ -7,6 +8,7 @@ import RoutesComponent from './routes';
 import NavBar from './components/common/NavBar.jsx';
 import Footer from './components/common/Footer.jsx';
 import '../src/assets/styles/tailwind.css';
+import MainLayout from './layouts/MainLayout.jsx';
 
 const App = () => {
   useEffect(() => {
@@ -24,9 +26,13 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-        <NavBar />
-        <RoutesComponent />
-        <Footer />
+        <div className="min-h-screen flex flex-col">
+          <NavBar />
+          <MainLayout>
+            <RoutesComponent />
+          </MainLayout>
+          <Footer />
+        </div>
       </Router>
     </AuthProvider>
   );

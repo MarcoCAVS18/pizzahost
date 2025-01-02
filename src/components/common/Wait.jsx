@@ -1,3 +1,5 @@
+// components/common/Wait.jsx
+
 import React from "react";
 import { FaTools } from "react-icons/fa";
 

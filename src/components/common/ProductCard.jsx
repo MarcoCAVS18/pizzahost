@@ -1,4 +1,5 @@
-// ProductCard.jsx
+// components/common/ProductCard.jsx
+
 const ProductCard = ({ image, title, alt, className = '' }) => (
     <div className={`group relative rounded-3xl overflow-hidden aspect-square shadow-md hover:shadow-xl transition-all duration-300 ${className}`}>
       <img

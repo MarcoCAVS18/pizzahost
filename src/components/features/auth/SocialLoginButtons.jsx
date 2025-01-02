@@ -6,12 +6,12 @@ import {
   signInWithGoogle, 
   signInWithFacebook, 
   signInWithApple 
-} from '../../services/authService';
+} from '../../../services/authService';
 
 const SocialLoginButton = ({ icon, text, onClick, bgColor, textColor, hoverColor }) => (
   <button 
     onClick={onClick}
-    className={`w-full ${bgColor} ${textColor} px-6 py-3 rounded-md flex items-center justify-center space-x-2 hover:${hoverColor} transition duration-200`}
+    className={`w-full ${bgColor} ${textColor} px-6 py-3 rounded-md flex items-center justify-center space-x-2 ${hoverColor} transition duration-200`}
   >
     {icon}
     <span>{text}</span>
@@ -51,7 +51,7 @@ const SocialLoginButtons = () => {
         onClick={handleGoogleSignIn}
         bgColor="bg-white"
         textColor="text-gray-600"
-        hoverColor="bg-gray-100"
+        hoverColor="hover:bg-gray-100"
       />
       <SocialLoginButton
         icon={<FaFacebook />}
@@ -59,7 +59,7 @@ const SocialLoginButtons = () => {
         onClick={handleFacebookSignIn}
         bgColor="bg-blue-600"
         textColor="text-white"
-        hoverColor="bg-blue-700"
+        hoverColor="hover:bg-blue-700"
       />
       <SocialLoginButton
         icon={<FaApple />}
@@ -67,7 +67,7 @@ const SocialLoginButtons = () => {
         onClick={handleAppleSignIn}
         bgColor="bg-black"
         textColor="text-white"
-        hoverColor="bg-gray-800"
+        hoverColor="hover:bg-gray-800"
       />
     </div>
   );

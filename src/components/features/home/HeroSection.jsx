@@ -1,17 +1,17 @@
-// HeroSection.js
+// src/features/home/HeroSection.jsx
 
 import React from "react";
-import Button from '../common/Button';
-import pizzaImage from '../../assets/images/HaUXj7y2oPuGZlctjXfr0i-4096x4096.webp';
-import smallPizzaImage from '../../assets/images/CxBPjGDGcVKJLxDP3jr0Ks-4096x4096.webp';
+import Button from '../../ui/Button';
+import pizzaImage from '../../../assets/images/HaUXj7y2oPuGZlctjXfr0i-4096x4096.webp';
+import smallPizzaImage from '../../../assets/images/CxBPjGDGcVKJLxDP3jr0Ks-4096x4096.webp';
 
-import { AnimationProvider } from '../../context/ScrollAnimation/AnimationContext';
-import ScrollAnimation from '../../context/ScrollAnimation/ScrollAnimation';
+import { AnimationProvider } from '../../../context/ScrollAnimation/AnimationContext';
+import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
 
 const HeroSection = () => {
   return (
     <AnimationProvider>
-      <section className="relative bg-beige min-h-screen flex items-center justify-center px-6 pt-20 lg:pt-24">
+      <section className="relative bg-beige min-h-screen flex items-center justify-center px-6">
         <div className="w-full mx-auto flex flex-col md:flex-row items-center gap-8 z-10">
           <div className="flex-1 md:text-left">
             <ScrollAnimation delay={0}>

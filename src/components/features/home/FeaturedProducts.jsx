@@ -1,9 +1,10 @@
-// components/sections/FeaturedProducts.jsx
+// src/features/home/FeaturedProducts.jsx
+
 import React from 'react';
-import { AnimationProvider } from '../../context/ScrollAnimation/AnimationContext';
-import ScrollAnimation from '../../context/ScrollAnimation/ScrollAnimation';
-import { FEATURED_PRODUCTS } from '../constants/ProductData';
-import ProductCard from '../common/ProductCard';
+import { AnimationProvider } from '../../../context/ScrollAnimation/AnimationContext';
+import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
+import { FEATURED_PRODUCTS } from '../../../components/constants/ProductData';
+import ProductCard from '../../common/ProductCard';
 
 const FeaturedProducts = () => {
   return (

@@ -1,4 +1,4 @@
-// Logo.jsx
+// components/common/Logo.jsx
 
 import React from 'react';
 

@@ -1,4 +1,4 @@
-// SideCard.jsx
+// src/features/home/other experience/SideCard.jsx
 
 import React from "react";
 

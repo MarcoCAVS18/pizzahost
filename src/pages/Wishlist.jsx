@@ -1,4 +1,4 @@
-// Wishlist.jsx
+// components/pages/Wishlist.jsx
 
 import Wait from "../components/common/Wait";
 import React from "react";

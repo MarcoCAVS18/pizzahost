@@ -1,4 +1,4 @@
-// AnimationContext
+// components/context/ScrollAnimation/AnimationContext.jsx
 
 import React, { createContext, useState, useContext } from 'react';
 

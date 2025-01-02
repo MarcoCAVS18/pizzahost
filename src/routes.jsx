@@ -11,6 +11,9 @@ import NotFound from './pages/NotFound';
 import UserLog from './pages/UserLog';
 import Wishlist from './pages/Wishlist';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import UserDashboard from './pages/UserDashboard';
+
 
 
 const RoutesComponent = () => (
@@ -19,6 +22,17 @@ const RoutesComponent = () => (
     <Route path="/menu" element={<Menu />} />
     <Route path="/user" element={<UserLog />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
+    <Route path="/reset-password" element={<ResetPassword />} />
+
+    <Route 
+      path="/dashboard" 
+      element={
+        <PrivateRoute>
+          <UserDashboard />
+        </PrivateRoute>
+      } 
+    />
+
     <Route 
       path="/cart" 
       element={

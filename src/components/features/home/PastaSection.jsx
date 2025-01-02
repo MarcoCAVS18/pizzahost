@@ -1,12 +1,13 @@
-// PastaSection.jsx
-import React from "react";
-import Card from "../common/Card";
-import pastaImage from "../../assets/images/pasta/pasta1.webp";
-import pastaImage2 from "../../assets/images/pasta/pasta2.webp";
-import primaryImage from "../../assets/images/pasta/pastaMain.webp";
+// src/features/home/PastaSection.jsx
 
-import { AnimationProvider } from "../../context/ScrollAnimation/AnimationContext";
-import ScrollAnimation from "../../context/ScrollAnimation/ScrollAnimation";
+import React from "react";
+import Card from "../../ui/Card";
+import pastaImage from "../../../assets/images/pasta/pasta1.webp";
+import pastaImage2 from "../../../assets/images/pasta/pasta2.webp";
+import primaryImage from "../../../assets/images/pasta/pastaMain.webp";
+
+import { AnimationProvider } from "../../../context/ScrollAnimation/AnimationContext";
+import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
 
 const PastaSection = () => {
   const pastaOptions = [

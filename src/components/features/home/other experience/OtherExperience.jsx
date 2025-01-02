@@ -1,14 +1,14 @@
-// OtherExperience.jsx
+// src/features/home/other experience/OtherExperience.jsx
 
 import React from "react";
 import SideCard from "./SideCard";
-import friesImage from "../../../assets/images/pizzas/prueba2.webp";
-import garlicKnotsImage from "../../../assets/images/pizzas/prueba2.webp";
-import dippingSaucesImage from "../../../assets/images/pizzas/prueba2.webp";
-import appImage from "../../../assets/images/pizzas/prueba2.webp";
+import friesImage from "../../../../assets/images/pizzas/prueba2.webp";
+import garlicKnotsImage from "../../../../assets/images/pizzas/prueba2.webp";
+import dippingSaucesImage from "../../../../assets/images/pizzas/prueba2.webp";
+import appImage from "../../../../assets/images/pizzas/prueba2.webp";
 
-import { AnimationProvider } from "../../../context/ScrollAnimation/AnimationContext";
-import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
+import { AnimationProvider } from "../../../../context/ScrollAnimation/AnimationContext";
+import ScrollAnimation from "../../../../context/ScrollAnimation/ScrollAnimation";
 
 const OtherExperience = () => {
   const cards = [

@@ -1,4 +1,4 @@
-// Button.jsx
+// src/components/common/Button.jsx
 
 import clsx from "clsx";
 

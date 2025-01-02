@@ -1,4 +1,4 @@
-// Cart.jsx
+// components/pages/Cart.jsx
 
 import Wait from "../components/common/Wait";
 

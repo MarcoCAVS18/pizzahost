@@ -1,4 +1,4 @@
-// Checkout.jsx
+// components/pages/Checkout.jsx
 
 import React from 'react';
 import Wait from '../components/common/Wait';

@@ -1,4 +1,4 @@
-// Menu.jsx
+// components/pages/Menu.jsx
 
 import React from 'react';
 import Wait from '../components/common/Wait';

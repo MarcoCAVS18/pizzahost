@@ -1,4 +1,5 @@
 // src/services/authService.js
+
 import { initializeApp } from 'firebase/app';
 import { 
   getAuth, 
@@ -14,6 +15,9 @@ import {
   sendPasswordResetEmail
 } from 'firebase/auth';
 
+import { getStorage } from 'firebase/storage';
+
+
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
   authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
@@ -25,6 +29,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+export const storage = getStorage(app);
+
 
 // Providers
 const googleProvider = new GoogleAuthProvider();
@@ -46,26 +52,7 @@ export const logIn = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error) {
-    let errorMessage;
-    
-    switch (error.code) {
-      case 'auth/too-many-requests':
-        errorMessage = 'Access temporarily disabled due to many failed login attempts. Please try again later or reset your password.';
-        break;
-      case 'auth/wrong-password':
-        errorMessage = 'Incorrect password. Please try again.';
-        break;
-      case 'auth/user-not-found':
-        errorMessage = 'No account found with this email.';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'Invalid email address.';
-        break;
-      default:
-        errorMessage = error.message;
-    }
-    
-    throw new Error(errorMessage);
+    throw error;
   }
 };
 
@@ -132,7 +119,8 @@ export const handleRedirectResult = async () => {
 export const resetPassword = async (email) => {
   try {
     await sendPasswordResetEmail(auth, email, {
-      url: `${window.location.origin}/login`,
+      url: `http://localhost:3000/reset-password`,
+      handleCodeInApp: true
     });
   } catch (error) {
     let errorMessage;
@@ -143,6 +131,9 @@ export const resetPassword = async (email) => {
         break;
       case 'auth/invalid-email':
         errorMessage = 'Please enter a valid email address.';
+        break;
+      case 'auth/unauthorized-continue-uri':
+        errorMessage = 'Configuration error. Please contact support.';
         break;
       default:
         errorMessage = error.message;

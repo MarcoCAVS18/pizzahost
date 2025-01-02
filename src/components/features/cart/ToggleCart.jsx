@@ -1,4 +1,4 @@
-// ToggleCart.js
+// components/cart/ToggleCart.jsx
 
 import React from 'react';
 import { FaShoppingCart } from 'react-icons/fa';

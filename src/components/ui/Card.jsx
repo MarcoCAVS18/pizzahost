@@ -1,4 +1,4 @@
-// Card.jsx
+// src/components/common/Card.jsx
 
 import React from 'react';
 import Button from './Button';

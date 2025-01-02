@@ -1,13 +1,13 @@
-// PizzasSection.jsx
+// src/features/home/PizzaSection.jsx
 
 import React from "react";
-import Card from "../common/Card";
-import pizzaImage from "../../assets/images/pizzas/prueba2.webp";
-import primaryImage from "../../assets/images/EQgnndgsDnOFzMSzJxRuiI-4096x4096.webp";
-import Button from "../common/Button";
+import Card from "../../ui/Card";
+import pizzaImage from "../../../assets/images/pizzas/prueba2.webp";
+import primaryImage from "../../../assets/images/EQgnndgsDnOFzMSzJxRuiI-4096x4096.webp";
+import Button from "../../ui/Button";
 
-import { AnimationProvider } from "../../context/ScrollAnimation/AnimationContext";
-import ScrollAnimation from "../../context/ScrollAnimation/ScrollAnimation";
+import { AnimationProvider } from "../../../context/ScrollAnimation/AnimationContext";
+import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
 
 const PizzaSection = () => {
   const pizzaOptions = [

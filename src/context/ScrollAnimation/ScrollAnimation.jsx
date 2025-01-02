@@ -1,4 +1,4 @@
-// ScrollAnimation.js
+// components/context/ScrollAnimation/ScrollAnimation.jsx
 
 import React from 'react';
 import { useInView } from 'react-intersection-observer';

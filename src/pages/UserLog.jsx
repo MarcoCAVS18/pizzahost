@@ -1,27 +1,30 @@
+// src/pages/UserLog.jsx
+
 import React from 'react';
-import LogIn from '../components/user/LogIn';
-import SignUp from '../components/user/SignUp';
+import LogIn from '../components/features/auth/LogIn';
+import SignUp from '../components/features/auth/SignUp';
+import Separator from '../components/ui/Separator';
 import { AnimationProvider } from '../context/ScrollAnimation/AnimationContext';
 import ScrollAnimation from '../context/ScrollAnimation/ScrollAnimation';
 
 const UserLog = () => {
   return (
     <AnimationProvider>
-      <div className="bg-lightBeige min-h-screen flex items-center justify-center py-12">
-        <div className="container mx-auto px-6 max-w-7xl">
-          <div className="flex flex-col md:flex-row space-y-12 md:space-y-0 md:space-x-16 items-stretch justify-center">
-            <ScrollAnimation delay={0} className="w-full md:w-2/3 lg:w-1/2 items-center">
-              <div className="p-8 md:p-12">
+      <div className="bg-beige min-h-screen flex items-start justify-center">
+        <div className="container mx-auto max-w-6xl">
+          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-12">
+            <ScrollAnimation delay={0} className="w-full">
+              <div className="p-8 md:p-10 lg:p-12">
                 <LogIn />
               </div>
             </ScrollAnimation>
             
-            <div className="hidden md:flex items-center">
-              <div className="h-full border-r-2 border-gray"></div>
+            <div className="hidden md:block self-stretch flex items-center">
+              <Separator orientation="vertical" />
             </div>
             
-            <ScrollAnimation delay={300} className="w-full md:w-2/3 lg:w-1/2">
-              <div className="p-8 md:p-12">
+            <ScrollAnimation delay={300} className="w-full">
+              <div className="p-8 md:p-10 lg:p-12">
                 <SignUp />
               </div>
             </ScrollAnimation>

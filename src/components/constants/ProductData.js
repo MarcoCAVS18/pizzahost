@@ -1,3 +1,5 @@
+// components/constants/ProductData
+
 import pizza3 from '../../assets/images/pizzas/pizza3.jpg'
 import pizza4 from '../../assets/images/pizzas/pizza4.jpg'
 import pizzaCustom from '../../assets/images/pizzas/CustomPizza.jpg'

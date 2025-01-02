@@ -1,4 +1,4 @@
-// pages/ForgotPassword.jsx
+// components/pages/ForgotPassword.jsx
 
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -83,8 +83,8 @@ const ForgotPassword = () => {
             </form>
           </>
         ) : (
-          <div className="text-center">
-            <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 text-green-700">
+          <div className="text-center font-serif">
+            <div className="mb-6 p-4">
               Password reset link has been sent to your email address.
               Please check your inbox and follow the instructions.
             </div>
