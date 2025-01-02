@@ -118,27 +118,32 @@ export const handleRedirectResult = async () => {
 // Password Reset
 export const resetPassword = async (email) => {
   try {
+    const redirectUrl =
+      process.env.NODE_ENV === "production"
+        ? "https://pizzita.netlify.app/reset-password"
+        : "http://localhost:3000/reset-password";
+
     await sendPasswordResetEmail(auth, email, {
-      url: `http://localhost:3000/reset-password`,
-      handleCodeInApp: true
+      url: redirectUrl,
+      handleCodeInApp: true,
     });
   } catch (error) {
     let errorMessage;
-    
+
     switch (error.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'No account found with this email address.';
+      case "auth/user-not-found":
+        errorMessage = "No account found with this email address.";
         break;
-      case 'auth/invalid-email':
-        errorMessage = 'Please enter a valid email address.';
+      case "auth/invalid-email":
+        errorMessage = "Please enter a valid email address.";
         break;
-      case 'auth/unauthorized-continue-uri':
-        errorMessage = 'Configuration error. Please contact support.';
+      case "auth/unauthorized-continue-uri":
+        errorMessage = "Configuration error. Please contact support.";
         break;
       default:
         errorMessage = error.message;
     }
-    
+
     throw new Error(errorMessage);
   }
 };
