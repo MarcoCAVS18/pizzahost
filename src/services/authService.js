@@ -1,10 +1,10 @@
-// src/services/authService.js
+// services/authService.js
 
 import { initializeApp } from 'firebase/app';
-import { 
-  getAuth, 
-  createUserWithEmailAndPassword, 
-  signInWithEmailAndPassword, 
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
   signOut,
   signInWithPopup,
   signInWithRedirect,
@@ -12,11 +12,9 @@ import {
   GoogleAuthProvider,
   FacebookAuthProvider,
   OAuthProvider,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
 } from 'firebase/auth';
-
 import { getStorage } from 'firebase/storage';
-
 
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
@@ -28,9 +26,8 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+export const auth = getAuth(app);
 export const storage = getStorage(app);
-
 
 // Providers
 const googleProvider = new GoogleAuthProvider();
@@ -62,9 +59,11 @@ export const signInWithGoogle = async () => {
     const result = await signInWithPopup(auth, googleProvider);
     return result.user;
   } catch (error) {
-    if (error.code === 'auth/popup-closed-by-user' || 
-        error.code === 'auth/cancelled-popup-request' ||
-        error.code === 'auth/popup-blocked') {
+    if (
+      error.code === 'auth/popup-closed-by-user' ||
+      error.code === 'auth/cancelled-popup-request' ||
+      error.code === 'auth/popup-blocked'
+    ) {
       await signInWithRedirect(auth, googleProvider);
       return null;
     }
@@ -77,9 +76,11 @@ export const signInWithFacebook = async () => {
     const result = await signInWithPopup(auth, facebookProvider);
     return result.user;
   } catch (error) {
-    if (error.code === 'auth/popup-closed-by-user' || 
-        error.code === 'auth/cancelled-popup-request' ||
-        error.code === 'auth/popup-blocked') {
+    if (
+      error.code === 'auth/popup-closed-by-user' ||
+      error.code === 'auth/cancelled-popup-request' ||
+      error.code === 'auth/popup-blocked'
+    ) {
       await signInWithRedirect(auth, facebookProvider);
       return null;
     }
@@ -92,9 +93,11 @@ export const signInWithApple = async () => {
     const result = await signInWithPopup(auth, appleProvider);
     return result.user;
   } catch (error) {
-    if (error.code === 'auth/popup-closed-by-user' || 
-        error.code === 'auth/cancelled-popup-request' ||
-        error.code === 'auth/popup-blocked') {
+    if (
+      error.code === 'auth/popup-closed-by-user' ||
+      error.code === 'auth/cancelled-popup-request' ||
+      error.code === 'auth/popup-blocked'
+    ) {
       await signInWithRedirect(auth, appleProvider);
       return null;
     }
@@ -119,9 +122,9 @@ export const handleRedirectResult = async () => {
 export const resetPassword = async (email) => {
   try {
     const redirectUrl =
-      process.env.NODE_ENV === "production"
-        ? "https://pizzita.netlify.app/reset-password"
-        : "http://localhost:3000/reset-password";
+      process.env.NODE_ENV === 'production'
+        ? 'https://pizzita.netlify.app/reset-password'
+        : 'http://localhost:3000/reset-password';
 
     await sendPasswordResetEmail(auth, email, {
       url: redirectUrl,
@@ -131,14 +134,14 @@ export const resetPassword = async (email) => {
     let errorMessage;
 
     switch (error.code) {
-      case "auth/user-not-found":
-        errorMessage = "No account found with this email address.";
+      case 'auth/user-not-found':
+        errorMessage = 'No account found with this email address.';
         break;
-      case "auth/invalid-email":
-        errorMessage = "Please enter a valid email address.";
+      case 'auth/invalid-email':
+        errorMessage = 'Please enter a valid email address.';
         break;
-      case "auth/unauthorized-continue-uri":
-        errorMessage = "Configuration error. Please contact support.";
+      case 'auth/unauthorized-continue-uri':
+        errorMessage = 'Configuration error. Please contact support.';
         break;
       default:
         errorMessage = error.message;
@@ -161,5 +164,3 @@ export const logOut = async () => {
 export const onAuthStateChanged = (callback) => {
   return auth.onAuthStateChanged(callback);
 };
-
-export { auth };
