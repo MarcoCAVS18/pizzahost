@@ -79,7 +79,7 @@ const ForgotPassword = () => {
                   size="medium"
                   textColor="text-white"
                   bgColor="bg-darkRed"
-                  className="w-full hover:bg-lightRed disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full hover:bg-lightRed disabled:opacity-50 disabled:cursor-not-allowed mb-8"
                   disabled={isLoading}
                 />
               </div>
@@ -100,7 +100,7 @@ const ForgotPassword = () => {
               size="medium"
               textColor="text-darkRed"
               bgColor="bg-transparent"
-              className="hover:text-lightRed underline mt-4 font-oldstyle"
+              className="hover:text-lightRed underline my-4 font-oldstyle"
             />
           </div>
         )}
