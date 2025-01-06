@@ -5,6 +5,8 @@ import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
 import Home from './pages/Home';
 import Menu from './pages/Menu';
+import About from './pages/About';
+import Contact from './pages/Contact';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
 import NotFound from './pages/NotFound';
@@ -23,6 +25,9 @@ const RoutesComponent = () => (
     <Route path="/user" element={<UserLog />} />
     <Route path="/forgot-password" element={<ForgotPassword />} />
     <Route path="/reset-password" element={<ResetPassword />} />
+    <Route path="/about" element={<About />} />
+    <Route path="/contact" element={<Contact />} />
+
 
     <Route 
       path="/dashboard" 

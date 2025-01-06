@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../../../context/AuthContext';
 import { uploadProfileImage } from '../../../context/AuthContext';
 import { FaCamera, FaUser } from 'react-icons/fa';
+import LogoutButton from './LogoutButton';
 
 const ProfileHeader = () => {
   const { user } = useAuth();
@@ -39,7 +40,6 @@ const ProfileHeader = () => {
             </div>
           )}
           
-          {/* Overlay para cambiar foto */}
           <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
             <label className="cursor-pointer p-4">
               <input
@@ -53,7 +53,6 @@ const ProfileHeader = () => {
             </label>
           </div>
           
-          {/* Indicador de carga */}
           {isUploading && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
               <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
@@ -65,9 +64,12 @@ const ProfileHeader = () => {
       <h1 className="font-serif italic text-3xl mb-2">
         {user?.displayName || 'User Name'}
       </h1>
-      <p className="font-oldstyle text-gray-600">
-        {user?.email}
-      </p>
+      <div className="flex items-center justify-center gap-4">
+        <p className="font-oldstyle text-gray-600">
+          {user?.email}
+        </p>
+        <LogoutButton />
+      </div>
     </div>
   );
 };

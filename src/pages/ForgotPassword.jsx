@@ -6,6 +6,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { resetPassword } from '../services/authService';
 import { Link } from 'react-router-dom';
+import Button from '../components/ui/Button';
 
 const ForgotPassword = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -72,13 +73,15 @@ const ForgotPassword = () => {
               </div>
 
               <div className="pt-4">
-                <button
+                <Button
+                  text={isLoading ? 'Sending...' : 'Send Reset Link'}
                   type="submit"
-                  className="w-full bg-darkRed text-white px-6 py-3 rounded-md hover:bg-lightRed transition duration-200 font-oldstyle text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                  size="medium"
+                  textColor="text-white"
+                  bgColor="bg-darkRed"
+                  className="w-full hover:bg-lightRed disabled:opacity-50 disabled:cursor-not-allowed"
                   disabled={isLoading}
-                >
-                  {isLoading ? 'Sending...' : 'Send Reset Link'}
-                </button>
+                />
               </div>
             </form>
           </>
@@ -91,21 +94,26 @@ const ForgotPassword = () => {
             <p className="text-gray-600 mt-4">
               Didn't receive the email? Check your spam folder or try again.
             </p>
-            <button
+            <Button
+              text="Try Again"
               onClick={() => setSuccess(false)}
-              className="text-darkRed hover:text-lightRed underline mt-4 font-oldstyle"
-            >
-              Try Again
-            </button>
+              size="medium"
+              textColor="text-darkRed"
+              bgColor="bg-transparent"
+              className="hover:text-lightRed underline mt-4 font-oldstyle"
+            />
           </div>
         )}
 
-        <div className="mt-8 text-center">
-          <Link
-            to="/user"
-            className="text-darkRed hover:text-lightRed underline font-oldstyle"
-          >
-            Back to Login
+        <div className="text-center">
+          <Link to="/user">
+            <Button
+              text="Back to Login"
+              size="medium"
+              textColor="text-white"
+              bgColor="bg-gray-700"
+              className="hover:text-lightRed, hover:bg-gray-500"
+            />
           </Link>
         </div>
       </div>

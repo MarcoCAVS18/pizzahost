@@ -8,6 +8,8 @@ import * as yup from 'yup';
 import SocialLoginButtons from './SocialLoginButtons';
 import { logIn } from '../../../services/authService';
 import Separator from '../../ui/Separator';
+import Button from '../../ui/Button';
+
 
 const LogIn = () => {
   const navigate = useNavigate();
@@ -82,12 +84,14 @@ const LogIn = () => {
         </div>
 
         <div>
-          <button
+          <Button
+            text="Log In"
             type="submit"
-            className="w-full bg-darkRed text-white font-serif py-3 rounded hover:bg-lightRed transition duration-300"
-          >
-            Log In
-          </button>
+            size="medium"
+            textColor="text-white"
+            bgColor="bg-darkRed"
+            className="w-full hover:bg-lightRed"
+          />
         </div>
       </form>
 

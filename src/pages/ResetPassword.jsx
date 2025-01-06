@@ -6,6 +6,8 @@ import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { auth } from "../services/authService";
 import ErrorMessage from "../components/common/ErrorMessage";
 
+import Button from "../components/ui/Button";
+
 const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -99,12 +101,16 @@ const ResetPassword = () => {
             />
           </div>
 
-          <button
+          <div>
+          <Button
+            text="Reset Password"
             type="submit"
-            className="w-full bg-darkRed text-white px-6 py-3 rounded-md font-oldstyle hover:bg-lightRed transition duration-200"
-          >
-            Reset Password
-          </button>
+            size="medium"
+            textColor="text-white"
+            bgColor="bg-darkRed"
+            className="w-full hover:bg-lightRed"
+          />
+        </div>
         </form>
       </div>
     </div>

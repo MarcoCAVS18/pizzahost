@@ -1,10 +1,9 @@
 // src/features/home/PizzaSection.jsx
 
 import React from "react";
-import Card from "../../ui/Card";
+import Button from "../../ui/Button";
 import pizzaImage from "../../../assets/images/pizzas/prueba2.webp";
 import primaryImage from "../../../assets/images/EQgnndgsDnOFzMSzJxRuiI-4096x4096.webp";
-import Button from "../../ui/Button";
 
 import { AnimationProvider } from "../../../context/ScrollAnimation/AnimationContext";
 import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
@@ -15,19 +14,31 @@ const PizzaSection = () => {
       image: pizzaImage,
       title: "The Classic",
       subtitle: "Classic Italian Flavors",
-      buttonText: "Add to Cart",
+      buttonProps: {
+        text: "Add to Cart",
+        size: "medium",
+        textColor: "text-darkRed",
+        bgColor: "bg-transparent",
+        className: "border border-darkRed hover:bg-darkRed hover:text-white transition-colors",
+      },
     },
     {
       image: pizzaImage,
       title: "The Pepperoni",
       subtitle: "A Classic Delight",
-      buttonText: "Add to Cart",
+      buttonProps: {
+        text: "Add to Cart",
+        size: "medium",
+        textColor: "text-darkRed",
+        bgColor: "bg-transparent",
+        className: "border border-darkRed hover:bg-darkRed hover:text-white transition-colors",
+      },
     },
   ];
 
   return (
     <AnimationProvider>
-      <div className="bg-beige py-8 sm:py-16 px-4 sm:px-8">
+      <section className="bg-beige py-8 sm:py-16 px-4 sm:px-8">
         <div className="text-center mb-12">
           <ScrollAnimation delay={0}>
             <p className="text-gray-500 text-sm font-serif italic">
@@ -44,7 +55,10 @@ const PizzaSection = () => {
           <ScrollAnimation delay={400}>
             <Button
               text="View Menu"
-              className="font-oldstyle font-semibold text-white bg-darkRed hover:bg-red py-2 px-6 rounded-full transition text-lg mx-auto md:mx-0"
+              size="large"
+              textColor="text-white"
+              bgColor="bg-darkRed"
+              className="font-oldstyle font-semibold hover:bg-red py-2 px-6 rounded-full transition text-lg mx-auto md:mx-0"
             />
           </ScrollAnimation>
         </div>
@@ -64,18 +78,29 @@ const PizzaSection = () => {
           <div className="lg:w-1/2 flex flex-col gap-8 justify-start order-2 lg:order-none">
             {pizzaOptions.map((pizza, index) => (
               <ScrollAnimation key={index} delay={800 + index * 200}>
-                <Card
-                  key={index}
-                  image={pizza.image}
-                  title={pizza.title}
-                  subtitle={pizza.subtitle}
-                  buttonText={pizza.buttonText}
-                />
+                <div className="flex flex-col md:flex-row md:items-center gap-8">
+                  <div className="w-72 h-72 md:w-72 md:h-64 flex-shrink-0 mx-auto md:mx-0">
+                    <img
+                      src={pizza.image}
+                      alt={pizza.title}
+                      className="w-full h-full object-cover rounded-2xl"
+                    />
+                  </div>
+                  <div className="flex-grow text-center md:text-left flex flex-col justify-between gap-6 my-4">
+                    <h4 className="font-serif font-semibold italic text-2xl">
+                      {pizza.title}
+                    </h4>
+                    <p className="text-gray-500 font-oldstyle text-xl">
+                      {pizza.subtitle}
+                    </p>
+                    <Button {...pizza.buttonProps} />
+                  </div>
+                </div>
               </ScrollAnimation>
             ))}
           </div>
         </div>
-      </div>
+      </section>
     </AnimationProvider>
   );
 };

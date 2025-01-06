@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import { signUp } from '../../../services/authService';
+import Button from '../../ui/Button';
 
 const SignUp = () => {
   const signUpSchema = yup.object().shape({
@@ -101,12 +102,14 @@ const SignUp = () => {
         </div>
 
         <div className="pt-2">
-          <button
+          <Button
+            text="Sign Up"
             type="submit"
-            className="w-full bg-darkRed text-white py-3 rounded hover:bg-lightRed transition duration-300"
-          >
-            Sign Up
-          </button>
+            size="medium"
+            textColor="text-white"
+            bgColor="bg-darkRed"
+            className="w-full hover:bg-lightRed"
+          />
         </div>
       </form>
     </div>

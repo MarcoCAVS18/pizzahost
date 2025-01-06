@@ -9,7 +9,7 @@ import ScrollAnimation from "../../context/ScrollAnimation/ScrollAnimation";
 const Wait = () => {
   return (
     <AnimationProvider>
-      <div className="flex flex-col bg-lightBeige items-center justify-center min-h-screen">
+      <div className="flex flex-col bg-beige items-center justify-center min-h-screen">
         <ScrollAnimation delay={0}>
           <FaTools className="text-8xl text-gray-400 mb-8" />
         </ScrollAnimation>
