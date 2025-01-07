@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FaEdit, FaSave } from 'react-icons/fa';
+import { FaEdit } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';
 import { getUserShippingInfo, updateUserShippingInfo } from '../../../services/userService';
 
@@ -18,6 +18,7 @@ const UserShippingInfo = () => {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [errors, setErrors] = useState({});
+  const [touched, setTouched] = useState({});
   const [shippingInfo, setShippingInfo] = useState({
     fullName: '',
     lastName: '',
@@ -55,19 +56,20 @@ const UserShippingInfo = () => {
   const validateField = (name, value) => {
     switch (name) {
       case 'fullName':
+        return value.trim() ? '' : 'First name is required';
       case 'lastName':
-        return value.trim() ? '' : 'This field is required';
+        return value.trim() ? '' : 'Last name is required';
       case 'address':
         return value.trim() ? '' : 'Address is required';
       case 'city':
         return value.trim() ? '' : 'City is required';
       case 'state':
-        return value ? '' : 'Please select a state';
+        return value ? '' : 'State is required';
       case 'postalCode':
         return /^\d{4}$/.test(value) ? '' : 'Please enter a valid 4-digit postal code';
       case 'phone':
         const phoneDigits = value.replace(/\D/g, '');
-        return phoneDigits.length >= 8 ? '' : 'Please enter a valid phone number';
+        return phoneDigits.length >= 8 ? '' : 'Please enter a valid phone number (min 8 digits)';
       default:
         return '';
     }
@@ -77,46 +79,58 @@ const UserShippingInfo = () => {
     const { name, value } = e.target;
     
     if (name === 'phone') {
-      // Solo permitir números
       const phoneNumber = value.replace(/\D/g, '');
       setShippingInfo(prev => ({ ...prev, [name]: phoneNumber }));
+      const error = validateField(name, phoneNumber);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
     } else {
       setShippingInfo(prev => ({ ...prev, [name]: value }));
+      const error = validateField(name, value);
+      setErrors(prev => ({
+        ...prev,
+        [name]: error
+      }));
     }
-
-    const error = validateField(name, name === 'phone' ? value.replace(/\D/g, '') : value);
-    setErrors(prev => ({
-      ...prev,
-      [name]: error
-    }));
   };
 
-  const handleEditToggle = () => {
-    if (isEditing) {
-      handleSave();
-    } else {
-      setErrors({});
-      setIsEditing(true);
-    }
+  const handleBlur = (e) => {
+    const { name } = e.target;
+    setTouched(prev => ({ ...prev, [name]: true }));
   };
 
   const isFormValid = () => {
     const requiredFields = ['fullName', 'lastName', 'address', 'city', 'state', 'postalCode', 'phone'];
-    const newErrors = {};
+    return requiredFields.every(field => {
+      const value = shippingInfo[field];
+      return !validateField(field, value); 
+    });
+  };
 
-    requiredFields.forEach(field => {
+  const handleSave = async () => {
+    if (!user?.uid) return;
+
+    const allFields = {
+      fullName: true,
+      lastName: true,
+      address: true,
+      city: true,
+      state: true,
+      postalCode: true,
+      phone: true
+    };
+    setTouched(allFields);
+
+    const newErrors = {};
+    Object.keys(allFields).forEach(field => {
       const error = validateField(field, shippingInfo[field]);
       if (error) {
         newErrors[field] = error;
       }
     });
-
     setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSave = async () => {
-    if (!user?.uid) return;
 
     if (isFormValid()) {
       try {
@@ -132,7 +146,7 @@ const UserShippingInfo = () => {
   };
 
   const renderInput = (name, label, placeholder) => (
-    <div className={errors[name] ? 'error' : ''}>
+    <div className={errors[name] && touched[name] ? 'error' : ''}>
       <label className="block text-sm font-serif text-gray-400">
         {label} <span className="text-darkRed">*</span>
       </label>
@@ -141,20 +155,27 @@ const UserShippingInfo = () => {
         name={name}
         value={shippingInfo[name]}
         onChange={handleChange}
+        onBlur={handleBlur}
         disabled={!isEditing}
         placeholder={placeholder}
         className={`mt-1 block w-full px-4 py-2 border rounded-md font-semibold bg-transparent font-serif ${
-          isEditing ? 'border-darkRed' : ''
-        } ${errors[name] ? 'border-red-500' : ''}`}
+          isEditing 
+            ? touched[name]
+              ? errors[name]
+                ? 'border-darkRed'
+                : 'border-green-500'
+              : 'border-darkRed'
+            : ''
+        }`}
       />
-      {errors[name] && (
-        <p className="mt-1 text-xs text-red-500">{errors[name]}</p>
+      {errors[name] && touched[name] && (
+        <p className="mt-1 text-xs text-red-500 font-serif">{errors[name]}</p>
       )}
     </div>
   );
 
   const renderSelect = (name, label) => (
-    <div className={errors[name] ? 'error' : ''}>
+    <div className={errors[name] && touched[name] ? 'error' : ''}>
       <label className="block text-sm font-serif text-gray-400">
         {label} <span className="text-darkRed">*</span>
       </label>
@@ -162,17 +183,24 @@ const UserShippingInfo = () => {
         name={name}
         value={shippingInfo[name]}
         onChange={handleChange}
+        onBlur={handleBlur}
         disabled={!isEditing}
         className={`mt-1 block w-full px-4 py-2 border rounded-md font-semibold bg-transparent font-serif ${
-          isEditing ? 'border-darkRed' : ''
-        } ${errors[name] ? 'border-red-500' : ''}`}
+          isEditing 
+            ? touched[name]
+              ? errors[name]
+                ? 'border-darkRed'
+                : 'border-green-500'
+              : 'border-darkRed'
+            : ''
+        }`}
       >
         <option value="">Select {label}</option>
         {australianStates.map(state => (
           <option key={state} value={state}>{state}</option>
         ))}
       </select>
-      {errors[name] && (
+      {errors[name] && touched[name] && (
         <p className="mt-1 text-xs text-red-500">{errors[name]}</p>
       )}
     </div>
@@ -185,24 +213,24 @@ const UserShippingInfo = () => {
           Shipping Information
         </h2>
         <button
-          onClick={handleEditToggle}
+          onClick={() => setIsEditing(!isEditing)}
           className="text-darkRed hover:text-red-800 transition-colors"
         >
-          {isEditing ? <FaSave className="text-xl" /> : <FaEdit className="text-xl" />}
+          <FaEdit className="text-xl" />
         </button>
       </div>
 
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
         <div className="flex space-x-4">
           <div className="w-1/2">
-            {renderInput('fullName', 'First Name', 'Facundo')}
+            {renderInput('fullName', 'First Name', 'John')}
           </div>
           <div className="w-1/2">
-            {renderInput('lastName', 'Last Name', 'Aguirre')}
+            {renderInput('lastName', 'Last Name', 'Doe')}
           </div>
         </div>
 
-        {renderInput('address', 'Address', 'La concha del pato 123')}
+        {renderInput('address', 'Address', '123 Main Street')}
 
         <div className="flex space-x-4">
           <div className="w-2/5">
@@ -232,18 +260,25 @@ const UserShippingInfo = () => {
         </div>
 
         {isEditing && (
-          <button
-            type="button"
-            onClick={handleSave}
-            className={`w-full py-2 rounded-md transition-colors ${
-              Object.keys(errors).length === 0
-                ? 'bg-darkRed text-white hover:bg-lightRed'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
-            disabled={Object.keys(errors).length > 0}
-          >
-            Save Changes
-          </button>
+          <>
+            <button
+              type="button"
+              onClick={handleSave}
+              className={`w-full py-2 rounded-md transition-colors ${
+                isFormValid()
+                  ? 'bg-darkRed text-white hover:bg-lightRed'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+              disabled={!isFormValid()}
+            >
+              Save Changes
+            </button>
+            {!isFormValid() && (
+              <p className="text-sm text-red-500 text-center">
+                Please complete all required fields correctly
+              </p>
+            )}
+          </>
         )}
       </form>
     </div>
