@@ -1,5 +1,4 @@
 // src/pages/Menu.jsx
-
 import React, { useState, useEffect } from 'react';
 import HeroSection from '../components/features/menu/HeroSection';
 import MenuSection from '../components/features/menu/MenuSection';
@@ -64,7 +63,7 @@ const MenuPage = () => {
         />
 
         {activeCategory === 'pizza' && (
-          <div id="custom-pizza" className="mt-16">
+          <div id="custom-pizza" className="mt-16 scroll-mt-32">
             <CustomPizzaSection onAddToCart={handleAddToCart} />
           </div>
         )}

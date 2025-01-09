@@ -1,4 +1,5 @@
 // src/components/features/menu/CustomPizzaSection/index.jsx
+
 import React, { useState } from 'react';
 import { customPizzaOptions } from '../../constants/menuData';
 import Button from '../../ui/Button';
@@ -73,10 +74,10 @@ const CustomPizzaSection = ({ onAddToCart }) => {
               <button
                 key={size}
                 onClick={() => setSelectedSize(size)}
-                className={`px-6 py-4 font-serif rounded-lg border-2 transition-all duration-300 shadow-lg 
+                className={`px-6 py-4 font-serif rounded-lg border-2 transition-all duration-300
                   ${selectedSize === size 
-                    ? 'bg-darkRed text-white border-darkRed scale-105 shadow-lg' 
-                    : 'bg-transparent text-gray-700 border-gray-200 hover:border-darkRed/50 shadow-lg'}`}
+                    ? 'bg-darkRed text-white border-darkRed scale-105' 
+                    : 'bg-transparent text-gray-700 border-gray-200 hover:border-darkRed/50'}`}
               >
                 {size} - ${price.toFixed(2)}
               </button>
@@ -84,11 +85,12 @@ const CustomPizzaSection = ({ onAddToCart }) => {
           </div>
         </div>
 
+        {/* Pizza Visualization and Flavor Selection */}
         <div className="grid md:grid-cols-2 gap-8">
           {/* Pizza Visualization */}
           <div>
             <h3 className="font-serif text-gray-600 mb-4">2. Select Your Portions</h3>
-            <div className="relative aspect-square w-[500px] mx-auto">
+            <div className="relative aspect-square w-full max-w-[500px] mx-auto">
               <div className={`absolute inset-0 transition-transform duration-500 ease-in-out ${getPizzaScale()}`}>
                 {portions.map((portion) => {
                   const flavor = portion.flavorId ? 
@@ -119,6 +121,7 @@ const CustomPizzaSection = ({ onAddToCart }) => {
                   );
                 })}
                 
+                {/* Líneas divisorias */}
                 <div className="absolute inset-0 pointer-events-none">
                   <div className="absolute left-1/2 top-0 bottom-0 w-0.5 bg-darkRed/30 transform -translate-x-1/2"></div>
                   <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-darkRed/30 transform -translate-y-1/2"></div>
@@ -128,7 +131,7 @@ const CustomPizzaSection = ({ onAddToCart }) => {
 
             {/* Price Breakdown */}
             {portions.some(p => p.flavorId) && (
-              <div className="mt-4 p-3 rounded-lg border border-darkRed/20 text-sm">
+              <div className="mt-4 p-3 bg-white/50 rounded-lg border border-darkRed/20 text-sm">
                 <div className="space-y-1 text-gray-600">
                   <p>Base ({selectedSize}): ${customPizzaOptions.basePrice[selectedSize].toFixed(2)}</p>
                   <p>Portions: {portions.filter(p => p.flavorId).length} x ${customPizzaOptions.portionPrice[selectedSize].toFixed(2)}</p>
@@ -153,7 +156,7 @@ const CustomPizzaSection = ({ onAddToCart }) => {
                     onClick={() => handleFlavorSelect(flavor.id)}
                     className="w-full p-4 text-left rounded-lg border hover:shadow-lg transition-all duration-300
                       hover:border-darkRed/50 focus:outline-none focus:ring-2 focus:ring-darkRed/50
-                      group"
+                      bg-white group"
                   >
                     <div className="flex items-center gap-4">
                       <img 
@@ -174,6 +177,7 @@ const CustomPizzaSection = ({ onAddToCart }) => {
           </div>
         </div>
 
+        {/* Order Controls */}
         <div className="mt-8 flex items-center justify-between">
           <div className="flex items-center gap-8">
             <div className="text-xl font-serif text-darkRed">
