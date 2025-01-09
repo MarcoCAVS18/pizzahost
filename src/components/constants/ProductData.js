@@ -29,7 +29,7 @@ export const FEATURED_PRODUCTS = [
     {
       id: 'custom-pizza',
       image: pizzaCustom,
-      title: 'Customize Your Pie',
+      title: 'Customize Your Pizza',
       alt: 'Customizable pizza options'
     },
   ];

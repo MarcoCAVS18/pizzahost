@@ -1,10 +1,32 @@
 // src/features/home/FeaturedProducts.jsx
-
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { AnimationProvider } from '../../../context/ScrollAnimation/AnimationContext';
 import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
 import { FEATURED_PRODUCTS } from '../../../components/constants/ProductData';
-import ProductCard from '../../common/ProductCard';
+
+const FeaturedCard = ({ product, delay }) => {
+  return (
+    <ScrollAnimation delay={delay}>
+      <Link 
+        to={product.id === 'custom-pizza' ? '/menu#custom-pizza' : '#'} 
+        className="block relative rounded-3xl overflow-hidden aspect-square shadow-md group cursor-pointer"
+      >
+        <img
+          src={product.image}
+          alt={product.alt}
+          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+        />
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
+        <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
+          <h3 className="text-white font-serif text-xl md:text-2xl drop-shadow-lg">
+            {product.title}
+          </h3>
+        </div>
+      </Link>
+    </ScrollAnimation>
+  );
+};
 
 const FeaturedProducts = () => {
   return (
@@ -29,12 +51,11 @@ const FeaturedProducts = () => {
           {/* Desktop Layout */}
           <div className="hidden lg:grid grid-cols-4 gap-6">
             {FEATURED_PRODUCTS.map((product, index) => (
-              <ScrollAnimation key={product.id} delay={300 + (index * 100)}>
-                <ProductCard 
-                  {...product}
-                  className="cursor-pointer"
-                />
-              </ScrollAnimation>
+              <FeaturedCard 
+                key={product.id}
+                product={product}
+                delay={300 + (index * 100)}
+              />
             ))}
           </div>
 
@@ -42,41 +63,42 @@ const FeaturedProducts = () => {
           <div className="hidden md:block lg:hidden">
             <div className="grid grid-cols-3 gap-4 mb-4">
               {FEATURED_PRODUCTS.slice(0, 3).map((product, index) => (
-                <ScrollAnimation key={product.id} delay={300 + (index * 100)}>
-                  <ProductCard 
-                    {...product}
-                    className="group"
-                  />
-                </ScrollAnimation>
+                <FeaturedCard 
+                  key={product.id}
+                  product={product}
+                  delay={300 + (index * 100)}
+                />
               ))}
             </div>
             
             <ScrollAnimation delay={600}>
-              <div className="relative rounded-3xl overflow-hidden aspect-[21/9] shadow-md">
+              <Link 
+                to="/menu#custom-pizza"
+                className="block relative rounded-3xl overflow-hidden aspect-[21/9] shadow-md group cursor-pointer"
+              >
                 <img
                   src={FEATURED_PRODUCTS[3].image}
                   alt={FEATURED_PRODUCTS[3].alt}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
-                <div className="absolute inset-0 bg-black/20" />
+                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 text-center">
-                  <h3 className="text-white font-serif text-2xl">
+                  <h3 className="text-white font-serif text-2xl drop-shadow-lg">
                     {FEATURED_PRODUCTS[3].title}
                   </h3>
                 </div>
-              </div>
+              </Link>
             </ScrollAnimation>
           </div>
 
           {/* Mobile Layout */}
           <div className="md:hidden grid grid-cols-2 gap-4">
             {FEATURED_PRODUCTS.map((product, index) => (
-              <ScrollAnimation key={product.id} delay={300 + (index * 100)}>
-                <ProductCard 
-                  {...product}
-                  className="rounded-2xl"
-                />
-              </ScrollAnimation>
+              <FeaturedCard 
+                key={product.id}
+                product={product}
+                delay={300 + (index * 100)}
+              />
             ))}
           </div>
         </div>
