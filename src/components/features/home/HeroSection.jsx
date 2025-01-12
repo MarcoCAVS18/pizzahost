@@ -8,6 +8,8 @@ import smallPizzaImage from '../../../assets/images/CxBPjGDGcVKJLxDP3jr0Ks-4096x
 import { AnimationProvider } from '../../../context/ScrollAnimation/AnimationContext';
 import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
 
+import { Link } from 'react-router-dom';
+
 const HeroSection = () => {
   return (
     <AnimationProvider>
@@ -19,17 +21,17 @@ const HeroSection = () => {
                 Delicious <span className="text-primary italic">Wood-Fired</span>
               </h1>
             </ScrollAnimation>
-            
+
             <ScrollAnimation delay={200}>
               <p className="text-gray-600 text-2xl mt-4 md:mt-2 font-oldstyle">
                 Discover our mouthwatering selection of freshly made pizzas.
               </p>
             </ScrollAnimation>
-            
+
             <ScrollAnimation delay={400}>
-              <div className="mt-6 flex justify-start">
+              <Link to="/menu">
                 <Button text="Order Now" className="sm:w-auto" />
-              </div>
+              </Link>
             </ScrollAnimation>
           </div>
 

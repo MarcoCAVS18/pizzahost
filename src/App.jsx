@@ -7,6 +7,7 @@ import { AuthProvider } from './context/AuthContext';
 import RoutesComponent from './routes';
 import NavBar from './components/common/NavBar.jsx';
 import Footer from './components/common/Footer.jsx';
+import ScrollToTop from './components/common/ScrollToTop.jsx';
 import '../src/assets/styles/tailwind.css';
 import MainLayout from './layouts/MainLayout.jsx';
 
@@ -26,6 +27,7 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
+      <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <NavBar />
           <MainLayout>
