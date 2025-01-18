@@ -3,7 +3,11 @@
 import Wait from "../components/common/Wait";
 import React from "react";
 
-const Wishlist = () => {
+import { usePageLoader } from "../hoks/usePageLoader";
+
+const Wishlist = ({setIsLoading}) => {
+  usePageLoader(setIsLoading);
+
   return (
     <div>
       <Wait /> 

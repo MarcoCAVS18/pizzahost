@@ -4,15 +4,18 @@ import React from 'react';
 import HeroSection from '../components/features/about/HeroSection';
 import OurStory from '../components/features/about/OurStory';
 import OurMission from '../components/features/about/OurMission';
+import { usePageLoader } from '../hoks/usePageLoader';
 
-const About = () => {
+const About = ({ setIsLoading }) => {
+    usePageLoader(setIsLoading);
+
     return (
-        <div>
-            <HeroSection />
-            <OurStory />
-            <OurMission />
-        </div>
+      <div>
+        <HeroSection />
+        <OurStory />
+        <OurMission />
+      </div>
     );
-};
+  };
 
 export default About;

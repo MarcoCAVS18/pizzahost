@@ -6,17 +6,18 @@ import FeaturedProducts from '../components/features/home/FeaturedProducts';
 import PizzasSection from '../components/features/home/PizzasSection';
 import PastaSection from '../components/features/home/PastaSection';
 import OtherExperience from '../components/features/home/other experience/OtherExperience';
+import { usePageLoader } from '../hoks/usePageLoader';
 
+const Home = ({ setIsLoading }) => {
+  usePageLoader(setIsLoading);
 
-const Home = () => {
   return (
     <div>
-      <HeroSection /> 
+      <HeroSection />
       <FeaturedProducts />
-      <PizzasSection /> 
-      <PastaSection /> 
+      <PizzasSection />
+      <PastaSection />
       <OtherExperience />
-      
     </div>
   );
 };

@@ -4,10 +4,13 @@ import CartItem from '../components/features/cart/CartItem';
 import Button from '../components/ui/Button';
 import { useCart } from '../hoks/useCart';
 import { useNavigate } from 'react-router-dom';
+import { usePageLoader } from '../hoks/usePageLoader';
 
 
-const Cart = () => {
+const Cart = ({ setIsLoading }) => {
   const navigate = useNavigate();
+    usePageLoader(setIsLoading);
+
   const {
     items,
     updateQuantity,

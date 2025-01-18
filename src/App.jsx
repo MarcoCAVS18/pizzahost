@@ -1,6 +1,4 @@
-// App.js
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { handleRedirectResult } from './services/authService';
 import { AuthProvider } from './context/AuthContext';
@@ -12,6 +10,8 @@ import '../src/assets/styles/tailwind.css';
 import MainLayout from './layouts/MainLayout.jsx';
 
 const App = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     handleRedirectResult()
       .then(user => {
@@ -27,13 +27,13 @@ const App = () => {
   return (
     <AuthProvider>
       <Router>
-      <ScrollToTop />
+        <ScrollToTop />
         <div className="min-h-screen flex flex-col">
           <NavBar />
-          <MainLayout>
-            <RoutesComponent />
+          <MainLayout isLoading={isLoading}>
+            <RoutesComponent setIsLoading={setIsLoading} /> 
           </MainLayout>
-          <Footer />
+          {!isLoading && <Footer />}
         </div>
       </Router>
     </AuthProvider>

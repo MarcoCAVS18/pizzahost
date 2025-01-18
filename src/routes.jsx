@@ -1,8 +1,8 @@
-// routes.jsx
-
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 import PrivateRoute from './components/common/PrivateRoute';
+
+// Pages
 import Home from './pages/Home';
 import Menu from './pages/Menu';
 import About from './pages/About';
@@ -16,54 +16,58 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import UserDashboard from './pages/UserDashboard';
 
+const RoutesComponent = ({ setIsLoading }) => {
+  return (
+    <Routes>
+      {/* Public Routes */}
+      <Route path="/" element={<Home setIsLoading={setIsLoading} />} />
+      <Route path="/menu" element={<Menu setIsLoading={setIsLoading} />} />
+      <Route path="/about" element={<About setIsLoading={setIsLoading} />} />
+      <Route path="/contact" element={<Contact setIsLoading={setIsLoading} />} />
+      
+      {/* Authentication Routes */}
+      <Route path="/user" element={<UserLog setIsLoading={setIsLoading}/>} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
 
+      {/* Protected Routes */}
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <UserDashboard setIsLoading={setIsLoading}/>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/cart"
+        element={
+          <PrivateRoute>
+            <Cart setIsLoading={setIsLoading}/>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/wishlist"
+        element={
+          <PrivateRoute>
+            <Wishlist setIsLoading={setIsLoading}/>
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/checkout"
+        element={
+          <PrivateRoute>
+            <Checkout />
+          </PrivateRoute>
+        }
+      />
 
-const RoutesComponent = () => (
-  <Routes>
-    <Route path="/" element={<Home />} />
-    <Route path="/menu" element={<Menu />} />
-    <Route path="/user" element={<UserLog />} />
-    <Route path="/forgot-password" element={<ForgotPassword />} />
-    <Route path="/reset-password" element={<ResetPassword />} />
-    <Route path="/about" element={<About />} />
-    <Route path="/contact" element={<Contact />} />
-
-
-    <Route 
-      path="/dashboard" 
-      element={
-        <PrivateRoute>
-          <UserDashboard />
-        </PrivateRoute>
-      } 
-    />
-
-    <Route 
-      path="/cart" 
-      element={
-        <PrivateRoute>
-          <Cart />
-        </PrivateRoute>
-      } 
-    />
-    <Route 
-      path="/wishlist" 
-      element={
-        <PrivateRoute>
-          <Wishlist />
-        </PrivateRoute>
-      } 
-    />
-    <Route 
-      path="/checkout" 
-      element={
-        <PrivateRoute>
-          <Checkout />
-        </PrivateRoute>
-      } 
-    />
-    <Route path="*" element={<NotFound />} />
-  </Routes>
-);
+      {/* 404 Route */}
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
 
 export default RoutesComponent;
