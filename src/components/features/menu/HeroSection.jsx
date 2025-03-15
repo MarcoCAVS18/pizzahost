@@ -1,6 +1,5 @@
-//src/components/features/menu/HeroSection.jsx
-
 import React from 'react';
+import Button from '../../ui/Button';
 import pizza5 from '../../../assets/images/pizzas/pizza6.jpg';
 
 const HeroSection = () => {
@@ -31,12 +30,18 @@ const HeroSection = () => {
             <p className="text-xl text-white/90 mb-8 max-w-lg font-serif drop-shadow-md">
               Check out our full menu and products through our physical menu. You can save it! It will always be updated.
             </p>
-            <button 
-              className="bg-darkRed text-white px-8 py-3 rounded-md hover:bg-lightRed transition-colors font-serif shadow-lg"
+            <Button 
+              text="Download"
               onClick={handleDownload}
-            >
-              Download
-            </button>
+              size="large"
+              textColor="text-white"
+              bgColor="bg-darkRed" 
+              hoverColor="hover:bg-lightRed"
+              rounded="rounded-md"
+              fontFamily="font-serif"
+              className="shadow-lg"
+              isNavigation={true} 
+            />
           </div>
         </div>
       </div>

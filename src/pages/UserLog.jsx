@@ -12,7 +12,7 @@ const UserLog = () => {
     <AnimationProvider>
       <div className="bg-beige min-h-screen flex items-start justify-center">
         <div className="container mx-auto max-w-6xl">
-          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-12">
+          <div className="grid md:grid-cols-[1fr_auto_1fr] gap-8 lg:gap-12 pb-8">
             <ScrollAnimation delay={0} className="w-full">
               <div className="p-8 md:p-10 lg:p-12">
                 <LogIn />

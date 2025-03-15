@@ -1,4 +1,4 @@
-// src/components/constant/menuData.js
+// src/components/constants/menuData.js
 
 import pizzaMargherita from '../../assets/images/pizzas/pizza8.png'
 import pizzaPepperoni from '../../assets/images/pizzas/pizza9.png'
@@ -22,11 +22,35 @@ export const pizzaSizes = {
   XLARGE: { name: 'Extra Large', price: 42.00 }
 };
 
+// Añadimos tamaños para la pasta
+export const pastaSizes = {
+  REGULAR: { name: 'Regular', price: 17.50 },
+  LARGE: { name: 'Large', price: 22.00 }
+};
+
+// Toppings en inglés
+export const pizzaToppings = [
+  { id: 'topping-extra-cheese', name: 'Extra Cheese', price: 1.50, category: 'cheese' },
+  { id: 'topping-pepperoni', name: 'Pepperoni', price: 2.00, category: 'meat' },
+  { id: 'topping-mushrooms', name: 'Mushrooms', price: 1.25, category: 'vegetable' },
+  { id: 'topping-olives', name: 'Olives', price: 1.00, category: 'vegetable' },
+  { id: 'topping-ham', name: 'Ham', price: 1.75, category: 'meat' },
+  { id: 'topping-bacon', name: 'Bacon', price: 2.25, category: 'meat' },
+  { id: 'topping-bell-peppers', name: 'Bell Peppers', price: 1.25, category: 'vegetable' },
+];
+
 export const pizzas = [
   {
     id: 'pizza-margherita',
     name: 'Margherita',
-    description: 'Fresh mozzarella, tomatoes, basil, olive oil, and our signature tomato',
+    description: 'Our classic signature pizza',
+    ingredients: [
+      { id: 1, name: 'Fresh mozzarella', removable: true },
+      { id: 2, name: 'Tomatoes', removable: true },
+      { id: 3, name: 'Basil', removable: true },
+      { id: 4, name: 'Olive oil', removable: true },
+      { id: 5, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 15.50,
@@ -39,7 +63,13 @@ export const pizzas = [
   {
     id: 'pizza-pepperoni',
     name: 'Classic Pepperoni',
-    description: 'Crispy pepperoni, melted mozzarella, and our signature tomato sauce',
+    description: 'Our traditional favorite with spicy pepperoni',
+    ingredients: [
+      { id: 1, name: 'Pepperoni', removable: true },
+      { id: 2, name: 'Mozzarella', removable: true },
+      { id: 3, name: 'Oregano', removable: true },
+      { id: 4, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 16.50,
@@ -52,7 +82,15 @@ export const pizzas = [
   {
     id: 'pizza-mushroom',
     name: 'Wild Mushroom',
-    description: 'Assorted wild mushrooms, garlic, thyme, mozzarella, and truffle oil',
+    description: 'A delightful combination of forest flavors',
+    ingredients: [
+      { id: 1, name: 'Wild mushrooms', removable: true },
+      { id: 2, name: 'Fresh mozzarella', removable: true },
+      { id: 3, name: 'Garlic', removable: true },
+      { id: 4, name: 'Thyme', removable: true },
+      { id: 5, name: 'Truffle oil', removable: true },
+      { id: 6, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 17.50,
@@ -65,7 +103,13 @@ export const pizzas = [
   {
     id: 'pizza-hawaiian',
     name: 'Hawaiian Dream',
-    description: 'Ham, caramelized pineapple, mozzarella, and our signature tomato.',
+    description: 'Sweet and savory tropical combination',
+    ingredients: [
+      { id: 1, name: 'Ham', removable: true },
+      { id: 2, name: 'Caramelized pineapple', removable: true },
+      { id: 3, name: 'Mozzarella', removable: true },
+      { id: 4, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 16.50,
@@ -78,7 +122,14 @@ export const pizzas = [
   {
     id: 'pizza-bbq-chicken',
     name: 'BBQ Chicken',
-    description: 'Grilled chicken, red onions, cilantro, mozzarella, and BBQ sauce',
+    description: 'Smoky and tangy barbecue flavors',
+    ingredients: [
+      { id: 1, name: 'Grilled chicken', removable: true },
+      { id: 2, name: 'Red onions', removable: true },
+      { id: 3, name: 'Cilantro', removable: true },
+      { id: 4, name: 'Mozzarella', removable: true },
+      { id: 5, name: 'BBQ sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 17.50,
@@ -91,7 +142,16 @@ export const pizzas = [
   {
     id: 'pizza-vegetarian',
     name: 'Garden Vegetarian',
-    description: 'Fresh bell peppers, mushrooms, red onions, black olives, artichokes, and mozzarella on our signature tomato sauce',
+    description: 'A colorful medley of fresh vegetables',
+    ingredients: [
+      { id: 1, name: 'Fresh bell peppers', removable: true },
+      { id: 2, name: 'Mushrooms', removable: true },
+      { id: 3, name: 'Red onions', removable: true },
+      { id: 4, name: 'Black olives', removable: true },
+      { id: 5, name: 'Artichokes', removable: true },
+      { id: 6, name: 'Mozzarella', removable: true },
+      { id: 7, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 16.50,
@@ -104,7 +164,15 @@ export const pizzas = [
   {
     id: 'pizza-buffalo',
     name: 'Spicy Buffalo',
-    description: 'Tender chicken tossed in buffalo sauce, red onions, mozzarella, and blue cheese crumbles, drizzled with ranch',
+    description: 'Zesty buffalo chicken with a kick',
+    ingredients: [
+      { id: 1, name: 'Buffalo chicken', removable: true },
+      { id: 2, name: 'Red onions', removable: true },
+      { id: 3, name: 'Mozzarella', removable: true },
+      { id: 4, name: 'Blue cheese crumbles', removable: true },
+      { id: 5, name: 'Ranch drizzle', removable: true },
+      { id: 6, name: 'Buffalo sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 17.50,
@@ -117,7 +185,17 @@ export const pizzas = [
   {
     id: 'pizza-supreme',
     name: 'Supreme Deluxe',
-    description: 'A feast of pepperoni, Italian sausage, green peppers, onions, mushrooms, black olives, and our signature blend of cheeses',
+    description: 'The ultimate combination of toppings',
+    ingredients: [
+      { id: 1, name: 'Pepperoni', removable: true },
+      { id: 2, name: 'Italian sausage', removable: true },
+      { id: 3, name: 'Green peppers', removable: true },
+      { id: 4, name: 'Onions', removable: true },
+      { id: 5, name: 'Mushrooms', removable: true },
+      { id: 6, name: 'Black olives', removable: true },
+      { id: 7, name: 'Mozzarella blend', removable: true },
+      { id: 8, name: 'Signature tomato sauce', removable: false }
+    ],
     category: 'pizza',
     sizes: {
       SMALL: 18.50,
@@ -134,16 +212,38 @@ export const pasta = [
     id: 'pasta-napolitana',
     name: 'Spaghetti Napolitana',
     description: 'Classic tomato sauce with fresh basil',
-    price: 17.50,
+    ingredients: [
+      { id: 1, name: 'Spaghetti pasta', removable: false },
+      { id: 2, name: 'Tomato sauce', removable: false },
+      { id: 3, name: 'Fresh basil', removable: true },
+      { id: 4, name: 'Parmesan cheese', removable: true },
+      { id: 5, name: 'Olive oil', removable: true },
+      { id: 6, name: 'Garlic', removable: true }
+    ],
     category: 'pasta',
+    sizes: {
+      REGULAR: 17.50,
+      LARGE: 22.00
+    },
     image: pastaNapolitana
   },
   {
     id: 'pasta-carbonara',
     name: 'Carbonara',
     description: 'Creamy sauce with bacon and parmesan',
-    price: 17.50,
+    ingredients: [
+      { id: 1, name: 'Spaghetti pasta', removable: false },
+      { id: 2, name: 'Bacon', removable: true },
+      { id: 3, name: 'Parmesan cheese', removable: true },
+      { id: 4, name: 'Egg yolks', removable: false },
+      { id: 5, name: 'Black pepper', removable: true },
+      { id: 6, name: 'Heavy cream', removable: false }
+    ],
     category: 'pasta',
+    sizes: {
+      REGULAR: 17.50,
+      LARGE: 22.00
+    },
     image: pastaCarbonara
   }
 ];
@@ -153,11 +253,20 @@ export const salads = [
     id: 'salad-greek',
     name: 'Greek Salad',
     description: 'Fresh vegetables with feta cheese and olives',
-    sizes: {
-      small: 7.50,
-      large: 12.00
-    },
+    ingredients: [
+      { id: 1, name: 'Fresh lettuce', removable: false },
+      { id: 2, name: 'Tomatoes', removable: true },
+      { id: 3, name: 'Cucumbers', removable: true },
+      { id: 4, name: 'Red onions', removable: true },
+      { id: 5, name: 'Feta cheese', removable: true },
+      { id: 6, name: 'Kalamata olives', removable: true },
+      { id: 7, name: 'Olive oil dressing', removable: true }
+    ],
     category: 'salad',
+    sizes: {
+      SMALL: 7.50,
+      LARGE: 12.00
+    },
     image: saladGreek
   }
 ];
@@ -166,8 +275,18 @@ export const sides = [
   {
     id: 'side-garlic-bread',
     name: 'Garlic Bread',
-    price: 5.00,
+    description: 'Crispy bread with garlic butter and herbs',
+    ingredients: [
+      { id: 1, name: 'Baguette', removable: false },
+      { id: 2, name: 'Garlic butter', removable: false },
+      { id: 3, name: 'Herbs', removable: true },
+      { id: 4, name: 'Parmesan (optional)', removable: true }
+    ],
     category: 'side',
+    // Convertimos el precio a estructura de tamaños para evitar el problema con CartItem
+    sizes: {
+      REGULAR: 5.00
+    },
     image: garlicBread
   }
 ];

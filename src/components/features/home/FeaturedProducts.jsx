@@ -1,15 +1,30 @@
-// src/features/home/FeaturedProducts.jsx
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { AnimationProvider } from '../../../context/ScrollAnimation/AnimationContext';
 import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
 import { FEATURED_PRODUCTS } from '../../../components/constants/ProductData';
 
-const FeaturedCard = ({ product, delay }) => {
+// Creamos un mapeo basado en el índice/posición para evitar depender del ID
+// Esto asume que el orden de las tarjetas es fijo: Pizza, Sides, Pasta, Custom Pizza
+const getCategoryById = (productId, index) => {
+  // Log para depuración
+  console.log("Product ID:", productId, "Index:", index);
+  
+  // Mapeo basado en el índice de la tarjeta
+  if (index === 0) return 'pizza';     // Primera tarjeta
+  if (index === 1) return 'side';      // Segunda tarjeta
+  if (index === 2) return 'pasta';     // Tercera tarjeta
+  if (productId.includes('custom') || index === 3) return 'custom-pizza'; // Tarjeta de pizza personalizada
+  
+  // Valor por defecto
+  return 'pizza';
+};
+
+const FeaturedCard = ({ product, index, delay, onClick }) => {
   return (
     <ScrollAnimation delay={delay}>
-      <Link 
-        to={product.id === 'custom-pizza' ? '/menu#custom-pizza' : '#'} 
+      <div 
+        onClick={onClick}
         className="block relative rounded-3xl overflow-hidden aspect-square shadow-md group cursor-pointer"
       >
         <img
@@ -23,12 +38,36 @@ const FeaturedCard = ({ product, delay }) => {
             {product.title}
           </h3>
         </div>
-      </Link>
+      </div>
     </ScrollAnimation>
   );
 };
 
 const FeaturedProducts = () => {
+  const navigate = useNavigate();
+
+  const handleCardClick = (productId, index) => {
+    console.log("Clicked on product:", productId, "at index:", index);
+    
+    // Determinar la categoría basada en el índice y/o ID
+    const categoryId = getCategoryById(productId, index);
+    
+    // Para custom pizza, ir directamente a esa sección
+    if (categoryId === 'custom-pizza') {
+      console.log("Navigating to custom pizza section");
+      navigate('/menu#custom-pizza');
+      return;
+    }
+    
+    // Para el resto de categorías, navegar a la sección del menú con la categoría correcta
+    console.log("Navigating to category:", categoryId);
+    navigate('/menu#menu-section', { 
+      state: { 
+        activeCategory: categoryId 
+      } 
+    });
+  };
+
   return (
     <AnimationProvider>
       <section className="bg-beige py-12 md:py-16">
@@ -54,7 +93,9 @@ const FeaturedProducts = () => {
               <FeaturedCard 
                 key={product.id}
                 product={product}
+                index={index}
                 delay={300 + (index * 100)}
+                onClick={() => handleCardClick(product.id, index)}
               />
             ))}
           </div>
@@ -66,14 +107,16 @@ const FeaturedProducts = () => {
                 <FeaturedCard 
                   key={product.id}
                   product={product}
+                  index={index}
                   delay={300 + (index * 100)}
+                  onClick={() => handleCardClick(product.id, index)}
                 />
               ))}
             </div>
             
             <ScrollAnimation delay={600}>
-              <Link 
-                to="/menu#custom-pizza"
+              <div 
+                onClick={() => handleCardClick(FEATURED_PRODUCTS[3].id, 3)}
                 className="block relative rounded-3xl overflow-hidden aspect-[21/9] shadow-md group cursor-pointer"
               >
                 <img
@@ -87,7 +130,7 @@ const FeaturedProducts = () => {
                     {FEATURED_PRODUCTS[3].title}
                   </h3>
                 </div>
-              </Link>
+              </div>
             </ScrollAnimation>
           </div>
 
@@ -97,7 +140,9 @@ const FeaturedProducts = () => {
               <FeaturedCard 
                 key={product.id}
                 product={product}
+                index={index}
                 delay={300 + (index * 100)}
+                onClick={() => handleCardClick(product.id, index)}
               />
             ))}
           </div>

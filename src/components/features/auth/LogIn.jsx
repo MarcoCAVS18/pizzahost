@@ -1,5 +1,3 @@
-// components/features/user/LogIn.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -14,6 +12,7 @@ import Button from '../../ui/Button';
 const LogIn = () => {
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const loginSchema = yup.object().shape({
     email: yup.string().email('Invalid email').required('Email is required'),
@@ -29,19 +28,40 @@ const LogIn = () => {
     'auth/user-not-found': 'No account exists with this email.',
     'auth/too-many-requests': 'Too many failed attempts. Please try again later.',
     'auth/invalid-credential': 'Invalid credentials. Please check your email and password.',
+    'auth/invalid-email': 'Please enter a valid email address.',
   };
 
   const onSubmit = async (data) => {
+    console.log('Login form submitted with data:', data);
+    setIsSubmitting(true);
+    
     try {
       setLoginError('');
-      await logIn(data.email, data.password);
-      console.log('User logged in successfully');
-      navigate('/dashboard');
+      console.log('Attempting to log in with email:', data.email);
+      
+      // Llamada a la función de login
+      const user = await logIn(data.email, data.password);
+      console.log('Login successful, user:', user);
+      
+      // Esperar un momento para asegurar que el estado de autenticación se actualice
+      setTimeout(() => {
+        console.log('Redirecting to dashboard...');
+        navigate('/dashboard');
+      }, 500);
+      
     } catch (error) {
-      console.error('Error during log in:', error);
-      setLoginError(
-        errorMessages[error.code] || 'An error occurred during login. Please try again.'
-      );
+      console.error('Login error:', error);
+      
+      // Manejo específico según el tipo de error
+      if (error.code) {
+        console.error('Error code:', error.code);
+        setLoginError(errorMessages[error.code] || `Login failed: ${error.message}`);
+      } else {
+        // Si el error no tiene código, puede ser un error personalizado
+        setLoginError(error.message || 'An unexpected error occurred. Please try again.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -51,7 +71,7 @@ const LogIn = () => {
       <p className="text-center mb-6 text-gray-600 font-serif">Log in to your account</p>
       
       {loginError && (
-        <div className="text-darkRed text-sm text-center mb-4">
+        <div className="text-darkRed text-sm text-center mb-4 p-2 bg-red-50 rounded">
           {loginError}
         </div>
       )}
@@ -62,6 +82,7 @@ const LogIn = () => {
             type="email"
             placeholder="Email"
             {...register('email')}
+            autoComplete="username email"
             className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none focus:border-darkRed"
           />
           {errors.email && <span className="text-darkRed text-xs block mt-1">{errors.email.message}</span>}
@@ -72,6 +93,7 @@ const LogIn = () => {
             type="password"
             placeholder="Password"
             {...register('password')}
+            autoComplete="current-password"
             className="w-full px-3 py-2 border-b border-gray-300 bg-transparent focus:outline-none focus:border-darkRed"
           />
           {errors.password && <span className="text-darkRed text-xs block mt-1">{errors.password.message}</span>}
@@ -85,12 +107,13 @@ const LogIn = () => {
 
         <div>
           <Button
-            text="Log In"
+            text={isSubmitting ? "Logging in..." : "Log In"}
             type="submit"
             size="medium"
             textColor="text-white"
             bgColor="bg-darkRed"
             className="w-full hover:bg-lightRed"
+            disabled={isSubmitting}
           />
         </div>
       </form>

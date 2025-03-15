@@ -14,14 +14,6 @@ const App = () => {
 
   useEffect(() => {
     handleRedirectResult()
-      .then(user => {
-        if (user) {
-          console.log('User signed in after redirect:', user);
-        }
-      })
-      .catch(error => {
-        console.error('Error handling redirect:', error);
-      });
   }, []);
 
   return (
@@ -31,7 +23,7 @@ const App = () => {
         <div className="min-h-screen flex flex-col">
           <NavBar />
           <MainLayout isLoading={isLoading}>
-            <RoutesComponent setIsLoading={setIsLoading} /> 
+            <RoutesComponent setIsLoading={setIsLoading} />
           </MainLayout>
           {!isLoading && <Footer />}
         </div>

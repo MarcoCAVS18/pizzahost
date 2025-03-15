@@ -12,7 +12,7 @@ const ToggleCart = () => {
       <div className="relative">
         <FaShoppingCart className="text-xl" />
         {cartQuantity > 0 && (
-          <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full">
+          <div className="absolute -top-2 -right-2 bg-darkRed text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full">
             {cartQuantity}
           </div>
         )}
@@ -20,5 +20,6 @@ const ToggleCart = () => {
     </div>
   );
 };
+
 
 export default ToggleCart;

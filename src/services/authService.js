@@ -40,15 +40,21 @@ export const signUp = async (email, password) => {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     return userCredential.user;
   } catch (error) {
-    throw new Error(error.message);
+    console.error('Sign up error:', error);
+    throw error; // Pasar el error original para poder acceder a error.code
   }
 };
 
 export const logIn = async (email, password) => {
   try {
+    console.log('AuthService: Intentando iniciar sesión con:', email);
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    console.log('AuthService: Login exitoso:', userCredential.user.uid);
     return userCredential.user;
   } catch (error) {
+    console.error('AuthService: Error en login:', error);
+    console.error('AuthService: Código de error:', error.code);
+    // Es importante lanzar el error original, no un nuevo Error
     throw error;
   }
 };
@@ -56,18 +62,22 @@ export const logIn = async (email, password) => {
 // Social Authentication with Popup fallback to Redirect
 export const signInWithGoogle = async () => {
   try {
+    console.log('AuthService: Iniciando login con Google');
     const result = await signInWithPopup(auth, googleProvider);
+    console.log('AuthService: Login con Google exitoso');
     return result.user;
   } catch (error) {
+    console.error('AuthService: Error en login con Google:', error);
     if (
       error.code === 'auth/popup-closed-by-user' ||
       error.code === 'auth/cancelled-popup-request' ||
       error.code === 'auth/popup-blocked'
     ) {
+      console.log('AuthService: Fallando a redirect para login con Google');
       await signInWithRedirect(auth, googleProvider);
       return null;
     }
-    throw new Error(error.message);
+    throw error; // Pasar el error original
   }
 };
 
@@ -84,7 +94,7 @@ export const signInWithFacebook = async () => {
       await signInWithRedirect(auth, facebookProvider);
       return null;
     }
-    throw new Error(error.message);
+    throw error; // Pasar el error original
   }
 };
 
@@ -101,7 +111,7 @@ export const signInWithApple = async () => {
       await signInWithRedirect(auth, appleProvider);
       return null;
     }
-    throw new Error(error.message);
+    throw error; // Pasar el error original
   }
 };
 
@@ -114,7 +124,8 @@ export const handleRedirectResult = async () => {
     }
     return null;
   } catch (error) {
-    throw new Error(error.message);
+    console.error('Error handling redirect:', error);
+    throw error; // Pasar el error original
   }
 };
 
@@ -131,32 +142,20 @@ export const resetPassword = async (email) => {
       handleCodeInApp: true,
     });
   } catch (error) {
-    let errorMessage;
-
-    switch (error.code) {
-      case 'auth/user-not-found':
-        errorMessage = 'No account found with this email address.';
-        break;
-      case 'auth/invalid-email':
-        errorMessage = 'Please enter a valid email address.';
-        break;
-      case 'auth/unauthorized-continue-uri':
-        errorMessage = 'Configuration error. Please contact support.';
-        break;
-      default:
-        errorMessage = error.message;
-    }
-
-    throw new Error(errorMessage);
+    console.error('Error in password reset:', error);
+    throw error; // Pasar el error original para poder acceder a error.code
   }
 };
 
 // Logout
 export const logOut = async () => {
   try {
+    console.log('AuthService: Cerrando sesión');
     await signOut(auth);
+    console.log('AuthService: Sesión cerrada con éxito');
   } catch (error) {
-    throw new Error(error.message);
+    console.error('AuthService: Error al cerrar sesión:', error);
+    throw error; // Pasar el error original
   }
 };
 

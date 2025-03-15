@@ -27,9 +27,8 @@ const SignUp = () => {
   const onSubmit = async (data) => {
     try {
       await signUp(data.email, data.password);
-      console.log('User signed up successfully');
     } catch (error) {
-      console.error('Error during sign up:', error);
+      // console.error('Error during sign up:', error);
     }
   };
 
