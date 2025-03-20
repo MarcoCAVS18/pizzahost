@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const Button = ({
   text = "Button",
-  loadingText = null, // Texto a mostrar mientras se procesa (ej: "Logging in...")
+  loadingText = null,
   onClick,
   className,
   size = "medium",
@@ -14,10 +14,10 @@ const Button = ({
   rounded = "rounded-2xl",
   hoverColor = "hover:bg-red",
   fontSize = "text-base",
-  isNavigation = false, // Para botones de navegación
-  isCartButton = false, // Para botones de carrito
-  type = "button", // Para botones de formulario
-  disabled = false, // Para deshabilitar el botón
+  isNavigation = false,
+  isCartButton = false,
+  type = "button",
+  disabled = false,
 }) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,9 +63,15 @@ const Button = ({
   // Determinar el color de fondo según el estado
   let currentBgColor = bgColor;
   if (isClicked && isCartButton) {
-    currentBgColor = "bg-green";
+    currentBgColor = "bg-green"; // Usar tu color personalizado "green"
   } else if (disabled) {
-    currentBgColor = "bg-gray-400"; // Color para botón deshabilitado
+    currentBgColor = "bg-gray-400";
+  }
+
+  // Determinar el color de hover
+  let currentHoverColor = hoverColor;
+  if (isClicked && isCartButton) {
+    currentHoverColor = "hover:bg-green"; // Usar el mismo color para hover
   }
 
   // Create different classNames based on button type
@@ -76,9 +82,8 @@ const Button = ({
     fontFamily,
     fontSize,
     rounded,
-    // Para botones de carrito, no aplicar hover cuando está clickeado
     // Para botones deshabilitados, no aplicar hover
-    !disabled && (!isClicked || !isCartButton) ? hoverColor : "",
+    !disabled ? (isClicked && isCartButton ? currentHoverColor : hoverColor) : "",
     "transition duration-300 ease-in-out flex items-center justify-center",
     disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer",
     className

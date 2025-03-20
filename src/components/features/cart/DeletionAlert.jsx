@@ -1,14 +1,24 @@
+// components/features/cart/DeletionAlert.jsx
+import { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const DeletionAlert = ({ itemName }) => {
-  if (itemName) {
-    toast.success(`"${itemName}" has been removed from the cart!`, {
-      position: toast.POSITION.TOP_RIGHT,
-    });
-  }
+  useEffect(() => {
+    if (itemName) {
+      toast.error(`"${itemName}" has been removed from the cart!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        style: { top: '120px' },
+      });
+    }
+  }, [itemName]);
 
-  return null; 
+  return null;
 };
 
 export default DeletionAlert;

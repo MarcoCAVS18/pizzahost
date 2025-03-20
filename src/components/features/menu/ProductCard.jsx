@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { FaCheck, FaHeart } from "react-icons/fa";
+import { FaHeart } from "react-icons/fa";
 import { useState } from "react";
 import { pizzaSizes } from "../../constants/menuData";
 import Button from "../../ui/Button";
@@ -9,6 +9,8 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishlist }) =
   const availableSizes = hasSize ? Object.keys(product.sizes) : [];
   const [selectedSize, setSelectedSize] = useState(() => hasSize ? availableSizes[0]?.toUpperCase() : null);
   const [quantity, setQuantity] = useState(1);
+
+  // eslint-disable-next-line no-unused-vars
   const [isAddedToCart, setIsAddedToCart] = useState(false);
 
   const getPrice = () => {
@@ -77,11 +79,12 @@ const ProductCard = ({ product, onAddToCart, onToggleWishlist, isInWishlist }) =
           </select>
           <div className="w-2/3 h-full">
             <Button
-              text={isAddedToCart ? <FaCheck className="text-white text-xl" /> : "Add to Cart"}
+              text="Add to Cart"
               onClick={handleAddToCart}
               className="w-full h-full"
-              bgColor={isAddedToCart ? "bg-green-500" : "bg-darkRed"}
+              bgColor="bg-darkRed"
               hoverColor="hover:bg-lightRed"
+              isCartButton={true}
             />
           </div>
         </div>
