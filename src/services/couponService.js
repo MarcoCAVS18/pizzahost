@@ -196,7 +196,29 @@ export const calculateDiscount = (coupon, subtotal, shippingCost = 0) => {
       }
       break;
       
-    // ... resto del código igual
+    case 'fixed':
+      console.log('Fixed Discount Details:', {
+        value: coupon.value,
+        subtotal
+      });
+      
+      // Descuento de valor fijo
+      discountAmount = Math.min(coupon.value, subtotal);
+      break;
+      
+    case 'shipping':
+      console.log('Shipping Discount Details:', {
+        value: coupon.value,
+        shippingCost
+      });
+      
+      // Descuento en el envío
+      discountedShipping = shippingCost * (1 - (coupon.value / 100));
+      break;
+      
+    default:
+      console.log('Unknown coupon type:', coupon.type);
+      break;
   }
   
   console.log('Calculated Discount:', {
@@ -209,6 +231,7 @@ export const calculateDiscount = (coupon, subtotal, shippingCost = 0) => {
   return {
     discountAmount: parseFloat(discountAmount.toFixed(2)),
     discountedShipping: parseFloat(discountedShipping.toFixed(2)),
+    originalShipping: shippingCost, 
     discountType: coupon.type,
     discountDescription: coupon.description
   };
