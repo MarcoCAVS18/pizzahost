@@ -1,13 +1,31 @@
 // hooks/useCustomPizzaModal.js
-
-import { useState } from 'react';
-import { pizzas } from '../components/constants/menuData';
+import { useState, useEffect } from 'react';
+import { getProductsByCategory } from '../services/productService';
 
 export const useCustomPizzaModal = (selectedSize) => {
   const [selectedFlavors, setSelectedFlavors] = useState({
     left: null,
     right: null
   });
+  const [pizzas, setPizzas] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar pizzas de Firestore
+  useEffect(() => {
+    const fetchPizzas = async () => {
+      try {
+        setLoading(true);
+        const pizzaProducts = await getProductsByCategory('pizza');
+        setPizzas(pizzaProducts);
+      } catch (error) {
+        console.error("Error loading pizzas:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPizzas();
+  }, []);
 
   const handleFlavorSelect = (pizza) => {
     if (!selectedFlavors.left) {
@@ -45,6 +63,7 @@ export const useCustomPizzaModal = (selectedSize) => {
   return {
     selectedFlavors,
     pizzas,
+    loading,
     handleFlavorSelect,
     calculatePrice,
     calculateTotalPrice,

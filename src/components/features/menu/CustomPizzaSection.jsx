@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaPizzaSlice } from 'react-icons/fa';
-import { pizzas } from '../../constants/menuData';
 import CustomPizzaModal from './CustomPizzaModal';
-import { useCustomPizzaModal } from '../../../hoks/useModal';
 import Button from '../../ui/Button';
+import { getProductsByCategory, getSizes } from '../../../services/productService';
 
+// Orden predefinido de tamaños
+const SIZE_ORDER = ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE'];
 
 const generateCompositeImage = (leftImageUrl, rightImageUrl) => {
   return new Promise((resolve) => {
@@ -33,7 +34,55 @@ const CustomPizzaSection = ({ onAddToCart }) => {
   const [selectedSize, setSelectedSize] = useState('MEDIUM');
   const [selectedFlavors, setSelectedFlavors] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const { resetSelection } = useCustomPizzaModal(selectedSize);
+  const [pizzaSizes, setPizzaSizes] = useState({});
+  const [pizzaProducts, setPizzaProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Cargar tamaños y productos de pizza
+  useEffect(() => {
+    const fetchPizzaData = async () => {
+      try {
+        setLoading(true);
+        
+        // Cargar tamaños
+        const sizes = await getSizes('pizza');
+        setPizzaSizes(sizes || {});
+        
+        // Cargar productos
+        const products = await getProductsByCategory('pizza');
+        setPizzaProducts(products || []);
+      } catch (error) {
+        console.error("Error loading pizza data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPizzaData();
+  }, []);
+
+  // Ordenar los tamaños según el orden predefinido
+  const orderedSizes = React.useMemo(() => {
+    if (!pizzaSizes || Object.keys(pizzaSizes).length === 0) return [];
+    
+    return Object.entries(pizzaSizes)
+      .sort(([sizeKeyA], [sizeKeyB]) => {
+        const indexA = SIZE_ORDER.indexOf(sizeKeyA.toUpperCase());
+        const indexB = SIZE_ORDER.indexOf(sizeKeyB.toUpperCase());
+        
+        // Si ambos tamaños están en nuestro array de orden, usar ese orden
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // Si solo uno está en el array, priorizar el que está
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // Si ninguno está en el array, usar orden alfabético
+        return sizeKeyA.localeCompare(sizeKeyB);
+      });
+  }, [pizzaSizes]);
 
   const handleConfirm = (flavors) => {
     setSelectedFlavors(flavors);
@@ -41,9 +90,15 @@ const CustomPizzaSection = ({ onAddToCart }) => {
   };
 
   const calculatePrice = () => {
-    if (!selectedFlavors) return pizzas[0].sizes[selectedSize];
-    const leftPrice = selectedFlavors.left.sizes[selectedSize];
-    const rightPrice = selectedFlavors.right.sizes[selectedSize];
+    if (!selectedFlavors || !pizzaSizes[selectedSize]) {
+      // Asegurarse de que accedemoss al precio de manera segura
+      return typeof pizzaSizes[selectedSize]?.price === 'number' 
+        ? pizzaSizes[selectedSize].price.toFixed(2) 
+        : '0.00';
+    }
+    
+    const leftPrice = selectedFlavors.left.sizes[selectedSize] || 0;
+    const rightPrice = selectedFlavors.right.sizes[selectedSize] || 0;
     return ((leftPrice + rightPrice) / 2 * 1.1 * quantity).toFixed(2);
   };
 
@@ -69,6 +124,14 @@ const CustomPizzaSection = ({ onAddToCart }) => {
     });
   };
 
+  if (loading) {
+    return (
+      <div id="custom-pizza" className="container mx-auto px-4 mb-16 text-center py-12">
+        Loading custom pizza options...
+      </div>
+    );
+  }
+
   return (
     <div id="custom-pizza" className="container mx-auto px-4 mb-16">
       <div className="text-center mb-12">
@@ -82,16 +145,24 @@ const CustomPizzaSection = ({ onAddToCart }) => {
         <div className="mb-12">
           <h3 className="font-serif text-xl text-gray-600 mb-6">1. Choose Your Size</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {Object.entries(pizzas[0].sizes).map(([size, price]) => (
-              <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-6 py-4 font-serif rounded-lg border-2 transition-all duration-300
-                  ${selectedSize === size ? 'bg-darkRed text-white border-darkRed scale-105' : 'bg-transparent text-gray-700 border-gray-200 hover:border-darkRed/50'}`}
-              >
-                {size} - ${price.toFixed(2)}
-              </button>
-            ))}
+            {orderedSizes.map(([size, sizeData]) => {
+              // Verificar que sizeData sea un objeto y tenga propiedades name y price
+              const sizeName = sizeData && typeof sizeData === 'object' && sizeData.name ? sizeData.name : size;
+              const sizePrice = sizeData && typeof sizeData === 'object' && typeof sizeData.price === 'number' 
+                ? sizeData.price.toFixed(2) 
+                : '0.00';
+              
+              return (
+                <button
+                  key={size}
+                  onClick={() => setSelectedSize(size)}
+                  className={`px-6 py-4 font-serif rounded-lg border-2 transition-all duration-300
+                    ${selectedSize === size ? 'bg-darkRed text-white border-darkRed scale-105' : 'bg-transparent text-gray-700 border-gray-200 hover:border-darkRed/50'}`}
+                >
+                  {sizeName} - ${sizePrice}
+                </button>
+              );
+            })}
           </div>
         </div>
 
@@ -130,19 +201,18 @@ const CustomPizzaSection = ({ onAddToCart }) => {
             bgColor={selectedFlavors ? "bg-darkRed" : "bg-gray-300"}
             hoverColor={selectedFlavors ? "hover:bg-lightRed" : ""}
             size="medium"
+            isCartButton={true}
           />
         </div>
       </div>
 
       <CustomPizzaModal
         isOpen={isModalOpen}
-        onClose={() => {
-          resetSelection();
-          setIsModalOpen(false);
-        }}
+        onClose={() => setIsModalOpen(false)}
         onConfirm={handleConfirm}
         selectedSize={selectedSize}
-        resetSelection={resetSelection}
+        pizzas={pizzaProducts}
+        resetSelection={() => setSelectedFlavors(null)}
       />
     </div>
   );

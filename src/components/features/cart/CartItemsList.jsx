@@ -2,7 +2,7 @@
 import React from 'react';
 import CartItem from './CartItem';
 import Separator from '../../ui/Separator';
-import { useCart } from '../../../hoks/useCart';
+import { useCart } from '../../../hooks/useCart';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

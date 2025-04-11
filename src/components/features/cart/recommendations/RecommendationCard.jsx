@@ -1,11 +1,10 @@
 // components/features/cart/recommendations/RecommendationCard.jsx
-import React, { useState } from 'react';
-import { FaCheck } from 'react-icons/fa';
+import React from 'react';
 import Button from '../../../ui/Button';
-import { pizzaSizes, pastaSizes } from '../../../constants/menuData';
+import { useProducts } from '../../../../hooks/useProducts';
 
 const RecommendationCard = ({ product, onAddToCart, preferredSize }) => {
-  const [isAddedToCart, setIsAddedToCart] = useState(false);
+  const { pizzaSizes, pastaSizes } = useProducts();
   
   // Usar el tamaño preferido si está disponible, de lo contrario usar el más pequeño
   const determineSize = () => {
@@ -13,35 +12,21 @@ const RecommendationCard = ({ product, onAddToCart, preferredSize }) => {
     
     const availableSizes = Object.keys(product.sizes);
     
-    // Si el tamaño preferido está disponible para este producto, usarlo
     if (preferredSize && availableSizes.includes(preferredSize.toUpperCase())) {
       return preferredSize.toUpperCase();
     }
-    
-    // Si no, usar el más pequeño (normalmente el primero en la lista)
     return availableSizes[0]?.toUpperCase();
   };
   
   const selectedSize = determineSize();
   const price = product.sizes ? product.sizes[selectedSize] : product.price;
   
-  // Obtener el nombre legible del tamaño
   const getSizeName = () => {
     if (!selectedSize) return '';
-    
     const normalizedSize = selectedSize.toUpperCase();
-    if (product.category === 'pasta') {
-      return pastaSizes[normalizedSize]?.name || normalizedSize;
-    }
-    return pizzaSizes[normalizedSize]?.name || normalizedSize;
+    return product.category === 'pasta' ? pastaSizes[normalizedSize]?.name || normalizedSize : pizzaSizes[normalizedSize]?.name || normalizedSize;
   };
   
-  const handleAddToCart = () => {
-    onAddToCart(product, selectedSize, 1);
-    setIsAddedToCart(true);
-    setTimeout(() => setIsAddedToCart(false), 2000);
-  };
-
   return (
     <div className="bg-beige rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden border-2 border-gray-100 w-full h-full">
       <div className="h-40 overflow-hidden">
@@ -65,12 +50,13 @@ const RecommendationCard = ({ product, onAddToCart, preferredSize }) => {
         
         <div className="mt-auto">
           <Button
-            text={isAddedToCart ? <FaCheck className="text-white" /> : "Add to Cart"}
-            onClick={handleAddToCart}
+            text="Add to Cart"
+            onClick={() => onAddToCart(product, selectedSize, 1)}
             className="w-full py-2"
-            bgColor={isAddedToCart ? "bg-green-500" : "bg-darkRed"}
+            bgColor="bg-darkRed"
             hoverColor="hover:bg-lightRed"
             textColor="text-white"
+            isCartButton={true}
           />
         </div>
       </div>

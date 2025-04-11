@@ -1,6 +1,6 @@
 import React from 'react';
 import ProductCard from './ProductCard';
-import { useCart } from '../../../hoks/useCart';
+import { useCart } from '../../../hooks/useCart';
 
 const MenuSection = ({ products }) => {
   const { addItem } = useCart();

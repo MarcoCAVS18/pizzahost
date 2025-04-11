@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { FaTrashAlt } from 'react-icons/fa';
-import { useCart } from '../../../hoks/useCart';
+import { useCart } from '../../../hooks/useCart';
 
 const ClearCartButton = () => {
   const { clearCart } = useCart();

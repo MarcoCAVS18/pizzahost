@@ -7,7 +7,6 @@ module.exports = {
         serif: ['"IBM Plex Serif"', 'serif'],
         oldstyle: ['"Old Standard TT"', 'serif'],
         logo: ['"Philosopher"', 'serif'], 
-
       },
       colors: {
         beige: '#FDEEE0',
@@ -18,7 +17,6 @@ module.exports = {
         lightBeige: '#F1EBE4',
         brown: '#91342F',
         darkBrown: '#AD4236',
-        green: '#275537',
         white: '#FFFFFF',
         gray: {
           50: '#EEEBE7',
@@ -31,6 +29,18 @@ module.exports = {
           700: '#374151',
           800: '#1F2937',
           900: '#111827',
+        },
+        green: {
+          50: '#E6F2E9',
+          100: '#CDEBD3',
+          200: '#9BD6A7',
+          300: '#6AC27C',
+          400: '#3AAD50',
+          500: '#275537',
+          600: '#1E4228',
+          700: '#163020',
+          800: '#0D1C12',
+          900: '#060B06',
         },
       },
       animation: {
@@ -62,4 +72,3 @@ module.exports = {
   },
   plugins: [],
 };
-

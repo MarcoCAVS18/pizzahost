@@ -1,6 +1,6 @@
 // components/features/cart/CartContainer.jsx
 import React from 'react';
-import { useCart } from '../../../hoks/useCart';
+import { useCart } from '../../../hooks/useCart';
 import EmptyCartMessage from './EmptyCartMessage';
 import CartContent from './CartContent';
 

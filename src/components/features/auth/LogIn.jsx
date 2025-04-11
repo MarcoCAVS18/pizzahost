@@ -32,20 +32,16 @@ const LogIn = () => {
   };
 
   const onSubmit = async (data) => {
-    console.log('Login form submitted with data:', data);
     setIsSubmitting(true);
     
     try {
       setLoginError('');
-      console.log('Attempting to log in with email:', data.email);
       
       // Llamada a la función de login
-      const user = await logIn(data.email, data.password);
-      console.log('Login successful, user:', user);
+      await logIn(data.email, data.password);
       
       // Esperar un momento para asegurar que el estado de autenticación se actualice
       setTimeout(() => {
-        console.log('Redirecting to dashboard...');
         navigate('/dashboard');
       }, 500);
       

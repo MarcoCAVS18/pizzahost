@@ -1,7 +1,7 @@
 // components/cart/ToggleCart.jsx
 import React from 'react';
 import { FaShoppingCart } from 'react-icons/fa';
-import { useCart } from '../../../hoks/useCart';
+import { useCart } from '../../../hooks/useCart';
 
 const ToggleCart = () => {
   const { items } = useCart();

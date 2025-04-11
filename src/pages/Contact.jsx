@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Wait from '../components/common/Wait';
-import { usePageLoader } from '../hoks/usePageLoader';
+import { usePageLoader } from '../hooks/usePageLoader';
 
 
 const Contact = ({ setIsLoading }) => {

@@ -9,11 +9,14 @@ import ScrollToTop from './components/common/ScrollToTop.jsx';
 import '../src/assets/styles/tailwind.css';
 import MainLayout from './layouts/MainLayout.jsx';
 
+// Importar componente de herramientas de desarrollo
+import DevelopmentTools from './components/dev/DevelopmentTools';
+
 const App = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    handleRedirectResult()
+    handleRedirectResult();
   }, []);
 
   return (
@@ -26,6 +29,9 @@ const App = () => {
             <RoutesComponent setIsLoading={setIsLoading} />
           </MainLayout>
           {!isLoading && <Footer />}
+          
+          {/* Añadir herramientas de desarrollo */}
+          {process.env.NODE_ENV === 'development' && <DevelopmentTools />}
         </div>
       </Router>
     </AuthProvider>

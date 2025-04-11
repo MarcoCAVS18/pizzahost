@@ -1,13 +1,31 @@
 // components/features/cart/recommendations/CartRecommendations.jsx
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../../../../hoks/useCart';
+import { useCart } from '../../../../hooks/useCart';
 import RecommendationCard from './RecommendationCard';
-import { pizzas, pasta, sides } from '../../../constants/menuData';
+import { getAllProducts } from '../../../../services/productService';
 import { toast } from 'react-toastify';
 
 const CartRecommendations = () => {
   const { items, addItem } = useCart();
   const [recommendations, setRecommendations] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Cargar todos los productos al inicio
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const products = await getAllProducts();
+        setAllProducts(products);
+      } catch (error) {
+        console.error('Error fetching products for recommendations:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchProducts();
+  }, []);
   
   // Determinar el tamaño preferido basado en los items del carrito
   const determinePreferredSize = () => {
@@ -40,21 +58,17 @@ const CartRecommendations = () => {
 
   // Generar recomendaciones basadas en los items del carrito
   useEffect(() => {
-    if (!items.length) return;
+    if (!items.length || !allProducts.length) return;
 
-    // Por ahora, implementaremos una lógica simple:
-    // 1. Recolectar categorías en el carrito
+    // Recolectar categorías en el carrito
     const cartCategories = new Set();
     items.forEach(item => {
       if (item.category) cartCategories.add(item.category);
     });
 
-    // 2. Encontrar productos de las mismas categorías que no estén en el carrito
+    // Encontrar productos de las mismas categorías que no estén en el carrito
     const cartItemIds = new Set(items.map(item => item.id));
     let potentialRecommendations = [];
-
-    // Combinar todos los productos
-    const allProducts = [...pizzas, ...pasta, ...sides];
 
     // Filtrar productos por categoría y que no estén en el carrito
     if (cartCategories.size > 0) {
@@ -75,7 +89,7 @@ const CartRecommendations = () => {
 
     // Seleccionar hasta 3 recomendaciones
     setRecommendations(potentialRecommendations.slice(0, 3));
-  }, [items]);
+  }, [items, allProducts]);
 
   const handleAddToCart = (product, selectedSize, quantity) => {
     addItem({ ...product, selectedSize, quantity });
@@ -93,7 +107,7 @@ const CartRecommendations = () => {
     });
   };
 
-  if (!recommendations.length) return null;
+  if (loading || !recommendations.length) return null;
 
   return (
     <div className="mt-8 mb-4">

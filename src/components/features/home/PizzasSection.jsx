@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Button from "../../ui/Button";
-import { pizzas } from "../../constants/menuData";
-import { useCart } from "../../../hoks/useCart";
+import { useCart } from "../../../hooks/useCart";
+import { getProductsByCategory } from "../../../services/productService";
 
 // Importamos la imagen de fondo principal
 import primaryImage from "../../../assets/images/EQgnndgsDnOFzMSzJxRuiI-4096x4096.webp";
@@ -13,13 +13,41 @@ import ScrollAnimation from "../../../context/ScrollAnimation/ScrollAnimation";
 const PizzaSection = () => {
   const navigate = useNavigate();
   const { addItem } = useCart();
+  const [featuredPizzas, setFeaturedPizzas] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  // Obtenemos los productos reales de menuData
-  const margheritaPizza = pizzas.find(pizza => pizza.id === 'pizza-margherita');
-  const pepperoniPizza = pizzas.find(pizza => pizza.id === 'pizza-pepperoni');
-  
-  // Array de productos a mostrar
-  const featuredPizzas = [margheritaPizza, pepperoniPizza].filter(Boolean);
+  // Cargar productos de pizza de Firestore
+  useEffect(() => {
+    const fetchPizzaProducts = async () => {
+      try {
+        setLoading(true);
+        const pizzaProducts = await getProductsByCategory('pizza');
+        
+        // Filtrar para mostrar solo dos pizzas específicas o las dos primeras
+        let featuredItems = pizzaProducts;
+        if (pizzaProducts.length > 0) {
+          // Opción 1: buscar por ID
+          const margheritaPizza = pizzaProducts.find(pizza => pizza.id === 'pizza-margherita');
+          const pepperoniPizza = pizzaProducts.find(pizza => pizza.id === 'pizza-pepperoni');
+          
+          if (margheritaPizza && pepperoniPizza) {
+            featuredItems = [margheritaPizza, pepperoniPizza];
+          } else {
+            // Opción 2: usar las dos primeras pizzas
+            featuredItems = pizzaProducts.slice(0, 2);
+          }
+        }
+        
+        setFeaturedPizzas(featuredItems);
+      } catch (error) {
+        console.error("Error loading pizza products:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPizzaProducts();
+  }, []);
   
   // Handle view menu button click - navigate without the check icon animation
   const handleViewMenu = () => {
@@ -88,39 +116,44 @@ const PizzaSection = () => {
           
           {/* Pizzas destacadas */}
           <div className="lg:w-1/2 flex flex-col gap-8 justify-center order-2 lg:order-none">
-            {featuredPizzas.map((pizza, index) => (
-              <ScrollAnimation key={pizza.id} delay={800 + index * 200}>
-                <div className="flex flex-col md:flex-row md:items-center gap-8">
-                  {/* Cuadrado gris con bordes redondeados para la imagen */}
-                  <div className="w-72 h-72 md:w-64 md:h-64 flex-shrink-0 mx-auto md:mx-0 rounded-2xl overflow-hidden bg-gray-200 shadow-md">
-                    <img
-                      src={pizza.image}
-                      alt={pizza.name}
-                      className="w-full h-full object-contain p-2"
-                    />
+            {loading ? (
+              <div className="text-center py-12">Loading featured pizzas...</div>
+            ) : (
+              featuredPizzas.map((pizza, index) => (
+                <ScrollAnimation key={pizza.id} delay={800 + index * 200}>
+                  <div className="flex flex-col md:flex-row md:items-center gap-8">
+                    {/* Cuadrado gris con bordes redondeados para la imagen */}
+                    <div className="w-72 h-72 md:w-64 md:h-64 flex-shrink-0 mx-auto md:mx-0 rounded-2xl overflow-hidden bg-gray-200 shadow-md">
+                      <img
+                        src={pizza.image}
+                        alt={pizza.name}
+                        className="w-full h-full object-contain p-2"
+                      />
+                    </div>
+                    
+                    {/* Información y botón */}
+                    <div className="flex-grow text-center md:text-left flex flex-col justify-between gap-6 my-4">
+                      <h4 className="font-serif font-semibold italic text-2xl">
+                        {pizza.name}
+                      </h4>
+                      <p className="text-gray-500 font-oldstyle text-xl">
+                        {pizza.description}
+                      </p>
+                      <Button
+                        text="Add to Cart"
+                        size="medium"
+                        textColor="text-darkRed"
+                        bgColor="bg-transparent"
+                        className="border border-darkRed hover:bg-darkRed hover:text-white transition-colors rounded-full"
+                        onClick={() => handleAddToCart(pizza)}
+                        isNavigation={false}
+                        isCartButton={true}
+                      />
+                    </div>
                   </div>
-                  
-                  {/* Información y botón */}
-                  <div className="flex-grow text-center md:text-left flex flex-col justify-between gap-6 my-4">
-                    <h4 className="font-serif font-semibold italic text-2xl">
-                      {pizza.name}
-                    </h4>
-                    <p className="text-gray-500 font-oldstyle text-xl">
-                      {pizza.description}
-                    </p>
-                    <Button
-                      text="Add to Cart"
-                      size="medium"
-                      textColor="text-darkRed"
-                      bgColor="bg-transparent"
-                      className="border border-darkRed hover:bg-darkRed hover:text-white transition-colors rounded-full"
-                      onClick={() => handleAddToCart(pizza)}
-                      isNavigation={false}
-                    />
-                  </div>
-                </div>
-              </ScrollAnimation>
-            ))}
+                </ScrollAnimation>
+              ))
+            )}
           </div>
         </div>
       </section>

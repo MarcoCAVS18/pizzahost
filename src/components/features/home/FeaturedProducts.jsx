@@ -8,7 +8,6 @@ import { FEATURED_PRODUCTS } from '../../../components/constants/ProductData';
 // Esto asume que el orden de las tarjetas es fijo: Pizza, Sides, Pasta, Custom Pizza
 const getCategoryById = (productId, index) => {
   // Log para depuración
-  console.log("Product ID:", productId, "Index:", index);
   
   // Mapeo basado en el índice de la tarjeta
   if (index === 0) return 'pizza';     // Primera tarjeta
@@ -47,20 +46,17 @@ const FeaturedProducts = () => {
   const navigate = useNavigate();
 
   const handleCardClick = (productId, index) => {
-    console.log("Clicked on product:", productId, "at index:", index);
     
     // Determinar la categoría basada en el índice y/o ID
     const categoryId = getCategoryById(productId, index);
     
     // Para custom pizza, ir directamente a esa sección
     if (categoryId === 'custom-pizza') {
-      console.log("Navigating to custom pizza section");
       navigate('/menu#custom-pizza');
       return;
     }
     
     // Para el resto de categorías, navegar a la sección del menú con la categoría correcta
-    console.log("Navigating to category:", categoryId);
     navigate('/menu#menu-section', { 
       state: { 
         activeCategory: categoryId 
