@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { FaPizzaSlice } from 'react-icons/fa';
 import CustomPizzaModal from './CustomPizzaModal';
 import Button from '../../ui/Button';
@@ -7,26 +7,12 @@ import { getProductsByCategory, getSizes } from '../../../services/productServic
 // Orden predefinido de tamaños
 const SIZE_ORDER = ['SMALL', 'MEDIUM', 'LARGE', 'XLARGE'];
 
+// Versión corregida de la función para evitar el error de seguridad de Canvas
 const generateCompositeImage = (leftImageUrl, rightImageUrl) => {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    canvas.width = 200;
-    canvas.height = 200;
-
-    const leftImage = new Image();
-    leftImage.src = leftImageUrl;
-    leftImage.onload = () => {
-      ctx.drawImage(leftImage, 0, 0, 100, 200);
-
-      const rightImage = new Image();
-      rightImage.src = rightImageUrl;
-      rightImage.onload = () => {
-        ctx.drawImage(rightImage, 100, 0, 100, 200);
-        resolve(canvas.toDataURL());
-      };
-    };
-  });
+  return {
+    leftImage: leftImageUrl,
+    rightImage: rightImageUrl
+  };
 };
 
 const CustomPizzaSection = ({ onAddToCart }) => {
@@ -62,7 +48,7 @@ const CustomPizzaSection = ({ onAddToCart }) => {
   }, []);
 
   // Ordenar los tamaños según el orden predefinido
-  const orderedSizes = React.useMemo(() => {
+  const orderedSizes = useMemo(() => {
     if (!pizzaSizes || Object.keys(pizzaSizes).length === 0) return [];
     
     return Object.entries(pizzaSizes)
@@ -91,15 +77,16 @@ const CustomPizzaSection = ({ onAddToCart }) => {
 
   const calculatePrice = () => {
     if (!selectedFlavors || !pizzaSizes[selectedSize]) {
-      // Asegurarse de que accedemoss al precio de manera segura
-      return typeof pizzaSizes[selectedSize]?.price === 'number' 
-        ? pizzaSizes[selectedSize].price.toFixed(2) 
-        : '0.00';
+      return '0.00';
     }
     
     const leftPrice = selectedFlavors.left.sizes[selectedSize] || 0;
     const rightPrice = selectedFlavors.right.sizes[selectedSize] || 0;
-    return ((leftPrice + rightPrice) / 2 * 1.1 * quantity).toFixed(2);
+    
+    // Calcular precio base promedio con un pequeño margen
+    const basePrice = ((leftPrice + rightPrice) / 2) * 1.1;
+    
+    return (basePrice * quantity).toFixed(2);
   };
 
   const getCustomPizzaTitle = () => {
@@ -109,10 +96,13 @@ const CustomPizzaSection = ({ onAddToCart }) => {
 
   const handleAddToCart = async () => {
     if (!selectedFlavors) return;
-    const compositeImage = await generateCompositeImage(
+    
+    // Usar la versión corregida que no genera una imagen compuesta con Canvas
+    const imageData = generateCompositeImage(
       selectedFlavors.left.image,
       selectedFlavors.right.image
     );
+    
     onAddToCart({
       type: 'custom-pizza',
       size: selectedSize,
@@ -120,7 +110,9 @@ const CustomPizzaSection = ({ onAddToCart }) => {
       quantity,
       totalPrice: calculatePrice(),
       title: getCustomPizzaTitle(),
-      image: compositeImage,
+      leftImage: imageData.leftImage,
+      rightImage: imageData.rightImage,
+      category: 'pizza'
     });
   };
 

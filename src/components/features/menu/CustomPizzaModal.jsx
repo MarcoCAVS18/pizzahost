@@ -61,7 +61,7 @@ const CustomPizzaModal = ({ isOpen, onClose, onConfirm, selectedSize, resetSelec
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <h3 className="font-serif font-semibold mb-4 text-center">Left Side</h3>
-            <div className={`p-4 h-40 flex items-center justify-center rounded-lg mb-4 ${selectedFlavors.left ? 'bg-green/10 border border-green' : 'bg-gray-100'}`}>
+            <div className={`p-4 h-40 flex items-center justify-center rounded-lg mb-4 ${selectedFlavors.left ? 'bg-green-500/10 border border-green' : 'bg-gray-100'}`}>
               {selectedFlavors.left ? (
                 <div className="text-center">
                   <img
@@ -79,7 +79,7 @@ const CustomPizzaModal = ({ isOpen, onClose, onConfirm, selectedSize, resetSelec
           
           <div>
             <h3 className="font-serif font-semibold mb-4 text-center">Right Side</h3>
-            <div className={`p-4 h-40 flex items-center justify-center rounded-lg mb-4 ${selectedFlavors.right ? 'bg-green/10 border border-green' : 'bg-gray-100'}`}>
+            <div className={`p-4 h-40 flex items-center justify-center rounded-lg mb-4 ${selectedFlavors.right ? 'bg-green-500/10 border border-green' : 'bg-gray-100'}`}>
               {selectedFlavors.right ? (
                 <div className="text-center">
                   <img

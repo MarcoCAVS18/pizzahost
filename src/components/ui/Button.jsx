@@ -63,7 +63,7 @@ const Button = ({
   // Determinar el color de fondo según el estado
   let currentBgColor = bgColor;
   if (isClicked && isCartButton) {
-    currentBgColor = "bg-green"; // Usar tu color personalizado "green"
+    currentBgColor = "bg-green-500"; // Usar tu color personalizado "green"
   } else if (disabled) {
     currentBgColor = "bg-gray-400";
   }
@@ -71,7 +71,7 @@ const Button = ({
   // Determinar el color de hover
   let currentHoverColor = hoverColor;
   if (isClicked && isCartButton) {
-    currentHoverColor = "hover:bg-green"; // Usar el mismo color para hover
+    currentHoverColor = "hover:bg-green-700"; // Usar el mismo color para hover
   }
 
   // Create different classNames based on button type

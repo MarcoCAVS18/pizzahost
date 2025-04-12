@@ -1,4 +1,3 @@
-// components/features/cart/CartItem.jsx
 import React, { useState, useEffect } from 'react';
 import { FaTrash, FaEdit, FaCheck } from 'react-icons/fa';
 import Modal from '../../ui/Modal';
@@ -25,8 +24,9 @@ const CartItem = ({
   flavors,
   isCustom,
   category,
-  leftImage,  // Nueva prop para pizza personalizada
-  rightImage  // Nueva prop para pizza personalizada
+  leftImage,  // Prop para la imagen izquierda de pizza personalizada
+  rightImage,  // Prop para la imagen derecha de pizza personalizada
+  basePrice    // Añadir basePrice para pizzas personalizadas
 }) => {
   const { pizzaSizes, pastaSizes } = useProducts();
   const [pizzaToppings, setPizzaToppings] = useState([]);
@@ -72,7 +72,21 @@ const CartItem = ({
     setRemovedIngredients([]);
   }, [selectedSize, extras, ingredients]);
 
-  const sizePrice = sizes?.[localSelectedSize] || price || 0;
+  // Calcular el precio base según el tipo de producto
+  const calculateBasePrice = () => {
+    // Para pizzas personalizadas
+    if (isCustom && flavors) {
+      const leftPrice = flavors.left.sizes[localSelectedSize] || 0;
+      const rightPrice = flavors.right.sizes[localSelectedSize] || 0;
+      return ((leftPrice + rightPrice) / 2) * 1.1;
+    }
+    
+    // Para productos regulares
+    return sizes?.[localSelectedSize] || basePrice || price || 0;
+  };
+
+  // Calcular precio total
+  const sizePrice = calculateBasePrice();
   const extrasTotal = selectedExtras.reduce((total, extra) => total + (Number(extra.price) || 0), 0);
   const itemTotal = (Number(sizePrice) + extrasTotal) * quantity;
 
@@ -172,7 +186,7 @@ const CartItem = ({
 
   // Función para guardar los cambios
   const handleSaveChanges = () => {
-    const newBasePrice = sizes[localSelectedSize] || 0;
+    const newBasePrice = calculateBasePrice();
     const newExtrasPrice = selectedExtras.reduce((total, extra) => total + (Number(extra.price) || 0), 0);
     
     onUpdateIngredients(id, localSelectedSize, {
@@ -190,27 +204,54 @@ const CartItem = ({
       <div className="flex items-start gap-3 py-3">
         <div className="w-20 h-20 flex-shrink-0">
           {isCustom ? (
-            <div className="relative w-full h-full rounded-lg overflow-hidden">
-              {/* En lugar de usar una imagen generada con canvas, mostramos dos imágenes lado a lado */}
-              <div className="absolute top-0 left-0 w-1/2 h-full overflow-hidden">
-                <img 
-                  src={flavors?.left?.image || leftImage} 
-                  alt={flavors?.left?.name || 'Left pizza'} 
-                  className="object-cover h-full"
-                  style={{ width: '200%', maxWidth: 'none', marginLeft: '-50%' }}
-                />
+            <div className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200">
+              {/* Visualización mejorada para pizzas personalizadas */}
+              <div className="absolute inset-0 flex">
+                {/* Mitad izquierda */}
+                <div className="w-1/2 h-full overflow-hidden border-r border-dashed border-gray-300">
+                  <img 
+                    src={leftImage || (flavors?.left?.image)} 
+                    alt={flavors?.left?.name || 'Left pizza'} 
+                    className="object-cover w-full h-full"
+                    onError={(e) => {
+                      console.error("Error loading left pizza image");
+                      e.target.src = "https://via.placeholder.com/100?text=Pizza";
+                    }}
+                  />
+                </div>
+                {/* Mitad derecha */}
+                <div className="w-1/2 h-full overflow-hidden">
+                  <img 
+                    src={rightImage || (flavors?.right?.image)} 
+                    alt={flavors?.right?.name || 'Right pizza'} 
+                    className="object-cover w-full h-full"
+                    onError={(e) => {
+                      console.error("Error loading right pizza image");
+                      e.target.src = "https://via.placeholder.com/100?text=Pizza";
+                    }}
+                  />
+                </div>
               </div>
-              <div className="absolute top-0 right-0 w-1/2 h-full overflow-hidden">
-                <img 
-                  src={flavors?.right?.image || rightImage} 
-                  alt={flavors?.right?.name || 'Right pizza'} 
-                  className="object-cover h-full"
-                  style={{ width: '200%', maxWidth: 'none', marginLeft: '-50%' }}
-                />
-              </div>
+              {/* Línea divisoria diagonal */}
+              <div 
+                className="absolute inset-0 pointer-events-none" 
+                style={{
+                  borderRight: '1px dashed rgba(255,255,255,0.7)',
+                  transform: 'rotate(0deg)',
+                  transformOrigin: 'center'
+                }}
+              ></div>
             </div>
           ) : (
-            <img src={image} alt={name} className="w-full h-full object-cover rounded-lg" />
+            <img 
+              src={image} 
+              alt={name} 
+              className="w-full h-full object-cover rounded-lg"
+              onError={(e) => {
+                console.error("Error loading product image");
+                e.target.src = "https://via.placeholder.com/100?text=Product";
+              }}
+            />
           )}
         </div>
   
@@ -218,7 +259,11 @@ const CartItem = ({
           <div className="flex justify-between items-center mb-1">
             <div className="flex items-center gap-2">
               <h3 className="text-lg font-serif font-bold text-gray-800">
-                {isCustom ? 'Custom Pizza' : name}
+                {isCustom ? 
+                  (flavors?.left?.name && flavors?.right?.name ? 
+                    `${flavors.left.name} & ${flavors.right.name}` : 
+                    'Custom Pizza') : 
+                  name}
               </h3>
               {selectedSize && (
                 <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full uppercase">
@@ -231,7 +276,7 @@ const CartItem = ({
   
           <div className="text-xs font-serif text-gray-600 mb-2 flex flex-wrap items-center gap-1">
             {isCustom ? (
-              <span>{flavors?.left?.name || ''} & {flavors?.right?.name || ''}</span>
+              <span className="italic">Half & Half Pizza</span>
             ) : (
               <>
                 <span>{localIngredients.map((ing) => ing?.name || '').filter(Boolean).join(', ')}</span>

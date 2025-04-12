@@ -1,28 +1,22 @@
+// components/features/auth/LogIn.jsx (Refactorizado con useErrorHandler)
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
 import SocialLoginButtons from './SocialLoginButtons';
 import { logIn } from '../../../services/authService';
 import Separator from '../../ui/Separator';
 import Button from '../../ui/Button';
-
+// Importar el esquema de validación centralizado
+import { loginSchema } from '../../../utils/validationSchemas';
+// Importar el hook de manejo de errores
+import useErrorHandler from '../../../hooks/useErrorHandler';
 
 const LogIn = () => {
   const navigate = useNavigate();
-  const [loginError, setLoginError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const loginSchema = yup.object().shape({
-    email: yup.string().email('Invalid email').required('Email is required'),
-    password: yup.string().required('Password is required'),
-  });
-
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: yupResolver(loginSchema),
-  });
-
+  
+  // Configurar el manejador de errores con mensajes específicos
   const errorMessages = {
     'auth/wrong-password': 'Incorrect email or password.',
     'auth/user-not-found': 'No account exists with this email.',
@@ -30,32 +24,30 @@ const LogIn = () => {
     'auth/invalid-credential': 'Invalid credentials. Please check your email and password.',
     'auth/invalid-email': 'Please enter a valid email address.',
   };
+  
+  const { error: loginError, executeWithErrorHandling } = useErrorHandler({ 
+    errorMessages,
+    defaultMessage: 'An unexpected error occurred during login. Please try again.'
+  });
+  
+  // Usar el esquema de validación centralizado
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    resolver: yupResolver(loginSchema),
+  });
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
     
     try {
-      setLoginError('');
-      
-      // Llamada a la función de login
-      await logIn(data.email, data.password);
-      
-      // Esperar un momento para asegurar que el estado de autenticación se actualice
-      setTimeout(() => {
-        navigate('/dashboard');
-      }, 500);
-      
-    } catch (error) {
-      console.error('Login error:', error);
-      
-      // Manejo específico según el tipo de error
-      if (error.code) {
-        console.error('Error code:', error.code);
-        setLoginError(errorMessages[error.code] || `Login failed: ${error.message}`);
-      } else {
-        // Si el error no tiene código, puede ser un error personalizado
-        setLoginError(error.message || 'An unexpected error occurred. Please try again.');
-      }
+      // Usar el manejador de errores para ejecutar la función de login
+      await executeWithErrorHandling(async () => {
+        await logIn(data.email, data.password);
+        
+        // Esperar un momento para asegurar que el estado de autenticación se actualice
+        setTimeout(() => {
+          navigate('/dashboard');
+        }, 500);
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -71,7 +63,6 @@ const LogIn = () => {
           {loginError}
         </div>
       )}
-
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <div>
           <input
@@ -83,7 +74,6 @@ const LogIn = () => {
           />
           {errors.email && <span className="text-darkRed text-xs block mt-1">{errors.email.message}</span>}
         </div>
-
         <div>
           <input
             type="password"
@@ -94,13 +84,11 @@ const LogIn = () => {
           />
           {errors.password && <span className="text-darkRed text-xs block mt-1">{errors.password.message}</span>}
         </div>
-
         <div className="flex justify-end mb-4">
           <a href="/forgot-password" className="text-sm text-darkRed font-serif hover:text-lightRed">
             Forgot Password?
           </a>
         </div>
-
         <div>
           <Button
             text={isSubmitting ? "Logging in..." : "Log In"}
@@ -113,9 +101,7 @@ const LogIn = () => {
           />
         </div>
       </form>
-
       <Separator text="Or" />
-
       <div>
         <SocialLoginButtons />
       </div>

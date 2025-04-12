@@ -1,4 +1,4 @@
-// src/hooks/useCoupon.js
+// src/hooks/useCoupon.js - FIXED VERSION
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { validateCoupon } from '../services/couponService';
 import { useCart } from './useCart';
@@ -66,14 +66,21 @@ export const useCoupon = (
     if (coupon.applyTo !== 'all') {
       // Calcular el subtotal de solo los productos aplicables
       const applicableSubtotal = items.reduce((sum, item) => {
-        if (item.category === coupon.applyTo) {
-          const itemPrice = item.price || 0;
-          const itemQuantity = item.quantity || 1;
-          return sum + (itemPrice * itemQuantity);
+        // Verificar si el item tiene la categoría correcta
+        // Para PIZZAMANIA, verificamos si el item es una pizza
+        if (item.category === coupon.applyTo || 
+            // También considerar pizzas personalizadas o items que contengan "pizza" en el nombre
+            (coupon.applyTo === 'pizza' && 
+             (item.isCustom || 
+              (item.name && item.name.toLowerCase().includes('pizza'))))) {
+          
+          const itemPrice = item.totalPrice || item.price || 0;
+          return sum + itemPrice;
         }
         return sum;
       }, 0);
       
+      console.log(`Subtotal aplicable para ${coupon.code} (${coupon.applyTo}):`, applicableSubtotal);
       
       // Calcular el descuento solo sobre productos aplicables
       switch (coupon.type) {

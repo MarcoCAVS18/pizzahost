@@ -169,8 +169,8 @@ const handleRemoveCoupon = () => {
         <div className={`
           mt-2 px-3 py-2 rounded-lg text-sm
           ${validationStatus === 'success' 
-            ? 'bg-green-50 text-green-700' 
-            : 'bg-red-50 text-darkRed'}
+            ? 'bg-green-100 text-green-700' 
+            : 'bg-red-100 text-darkRed'}
         `}>
           {validationMessage}
         </div>

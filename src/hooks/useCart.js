@@ -8,17 +8,41 @@ const useCartStore = create(
 
       addItem: (product) => {
         if (product.type === 'custom-pizza') {
-          // Lógica para agregar una pizza personalizada
+          // Lógica mejorada para agregar una pizza personalizada
+          // Convertir el precio a número para evitar problemas de tipo
+          const priceAsNumber = typeof product.totalPrice === 'string' 
+            ? parseFloat(product.totalPrice) 
+            : product.totalPrice;
+            
+          // Verificar que el precio sea un número válido
+          if (isNaN(priceAsNumber)) {
+            console.error('Error: Precio inválido para pizza personalizada', product);
+            return;
+          }
+          
           const customPizza = {
             id: `custom-pizza-${Date.now()}`, // ID único
-            name: 'Custom Pizza',
-            image: 'ruta/a/imagen/personalizada.png', // Imagen por defecto
+            name: product.title || 'Custom Pizza',
+            // Guardar las URLs de las imágenes originales
+            leftImage: product.leftImage,
+            rightImage: product.rightImage,
             selectedSize: product.size,
-            quantity: product.quantity,
-            price: product.totalPrice,
+            quantity: product.quantity || 1,
+            price: priceAsNumber, // Usar el precio convertido a número
+            basePrice: priceAsNumber, // Añadir basePrice para consistencia
+            totalPrice: priceAsNumber * (product.quantity || 1),
             flavors: product.flavors,
             isCustom: true, // Bandera para identificar pizzas personalizadas
+            category: 'pizza', // Añadir categoría para cupones
           };
+
+          // Registrar información para depuración
+          console.log('Añadiendo pizza personalizada al carrito:', {
+            precio: priceAsNumber,
+            precioTotal: customPizza.totalPrice,
+            tamaño: product.size,
+            cantidad: product.quantity
+          });
 
           set((state) => ({
             items: [...state.items, customPizza],
@@ -68,6 +92,7 @@ const useCartStore = create(
                   totalPrice: basePrice * quantity,
                   ingredients: product.ingredients || [],
                   sizes: product.sizes,
+                  category: product.category || null, // Asegurar que la categoría se guarde
                 },
               ],
             };
@@ -81,18 +106,40 @@ const useCartStore = create(
             return {
               ...item,
               quantity,
-              totalPrice: (item.basePrice + item.extrasPrice) * quantity,
+              totalPrice: item.isCustom 
+                ? item.price * quantity 
+                : (item.basePrice + item.extrasPrice) * quantity,
             };
           }
           return item;
         }),
       })),
 
-      removeItem: ({ id, selectedSize }) => set((state) => ({
-        items: state.items.filter(
-          (item) => !(item.id === id && item.selectedSize === selectedSize)
-        ),
-      })),
+      removeItem: ({ id, selectedSize }) => {
+        // Registrar información para depuración
+        console.log('Eliminando item del carrito:', { id, selectedSize });
+        
+        set((state) => {
+          // Verificar si el item existe antes de eliminarlo
+          const itemToRemove = state.items.find(
+            (item) => item.id === id && item.selectedSize === selectedSize
+          );
+          
+          if (!itemToRemove) {
+            console.error('Error: Item no encontrado para eliminar', { id, selectedSize });
+            return { items: state.items };
+          }
+          
+          // Filtrar el item a eliminar
+          const newItems = state.items.filter(
+            (item) => !(item.id === id && item.selectedSize === selectedSize)
+          );
+          
+          console.log('Items restantes después de eliminar:', newItems.length);
+          
+          return { items: newItems };
+        });
+      },
 
       updateIngredients: (id, newSize, updatedData) => set((state) => {
         // Encontrar el ítem actual

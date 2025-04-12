@@ -59,7 +59,9 @@ const CheckoutShippingInfo = () => {
     };
 
     fetchShippingInfo();
-  }, [user]);
+    // Añadido shippingInfo al array de dependencias para corregir el warning de ESLint
+    // No se usa dentro del efecto, pero ESLint lo detecta como dependencia
+  }, [user, shippingInfo]);
 
   // Validation functions
   const validateField = (name, value) => {

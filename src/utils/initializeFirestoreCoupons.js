@@ -137,7 +137,7 @@ const CouponInitializer = () => {
       </button>
       
       {result && (
-        <div className={`mt-4 p-3 rounded-md ${result.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'}`}>
+        <div className={`mt-4 p-3 rounded-md ${result.success ? 'bg-green-100 text-green-800' : 'bg-red-50 text-red-800'}`}>
           <p className="text-sm">{result.message}</p>
         </div>
       )}
