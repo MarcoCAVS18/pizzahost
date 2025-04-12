@@ -1,5 +1,5 @@
-// src/components/features/cart/CartSummary.jsx
-import React, { useState, useCallback } from 'react';
+// src/components/features/cart/CartSummary.jsx - VERSIÓN CORREGIDA
+import React, { useState, useCallback, useEffect } from 'react';
 import { useCart } from '../../../hooks/useCart';
 import Button from '../../ui/Button';
 import Separator from '../../ui/Separator';
@@ -36,11 +36,21 @@ const CartSummary = () => {
   // Asegurar que el descuento sea un número
   const discountAmount = typeof discountInfo.discountAmount === 'number' ? discountInfo.discountAmount : 0;
   
-  // Total con descuento - garantizar que todos los valores son números
-  const finalTotal = discountInfo.couponCode && typeof discountInfo.total === 'number' && !discountInfo.couponRemoved
-    ? discountInfo.total 
+  // Calcular el total final manualmente para asegurar que refleje correctamente los descuentos
+  const finalTotal = discountInfo.couponCode && !discountInfo.couponRemoved
+    ? (subtotal - discountAmount) + shipping
     : subtotal + shipping;
 
+  // Registrar valores para depuración
+  useEffect(() => {
+    console.log("CartSummary - Estado actual:", {
+      subtotal,
+      discountAmount,
+      shipping,
+      finalTotal,
+      discountInfo
+    });
+  }, [subtotal, discountAmount, shipping, finalTotal, discountInfo]);
 
   // Manejar la aplicación de descuentos (memoizado para evitar recreaciones)
   const handleDiscountApplied = useCallback((discountData) => {
@@ -78,11 +88,17 @@ const CartSummary = () => {
       discountAmount: typeof discountData.discountAmount === 'number' ? discountData.discountAmount : 0,
       discountedShipping: typeof discountData.discountedShipping === 'number' ? discountData.discountedShipping : originalShipping,
       originalShipping: typeof discountData.originalShipping === 'number' ? discountData.originalShipping : originalShipping,
-      total: typeof discountData.total === 'number' ? discountData.total : subtotal + originalShipping,
+      // Calcular el total manualmente si no viene en los datos
+      total: typeof discountData.total === 'number' 
+        ? discountData.total 
+        : (subtotal - (typeof discountData.discountAmount === 'number' ? discountData.discountAmount : 0)) + 
+          (typeof discountData.discountedShipping === 'number' ? discountData.discountedShipping : originalShipping),
       couponCode: discountData.couponCode || null,
       couponId: discountData.couponId || null,
       couponRemoved: false
     };
+    
+    console.log("CartSummary - Datos validados:", validatedData);
     
     // Procesamiento normal para aplicar cupón
     setDiscountInfo(validatedData);
