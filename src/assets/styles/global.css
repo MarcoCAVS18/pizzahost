@@ -15,3 +15,40 @@
     opacity: 0;
     transition: opacity 1000ms;
   }
+
+  /* Estilos para el carousel de recomendaciones */
+.recommendations-carousel {
+  overflow: visible !important;
+  padding-bottom: 20px;
+}
+
+.recommendations-carousel .swiper-slide {
+  transition: transform 0.3s ease;
+}
+
+.recommendations-carousel .swiper-slide:not(.swiper-slide-active) {
+  opacity: 0.8;
+  scale: 0.95;
+}
+
+.recommendations-carousel .swiper-pagination {
+  bottom: -10px !important;
+  display: flex;
+  justify-content: center;
+}
+
+.recommendations-carousel .swiper-pagination-bullet {
+  background-color: #A0A0A0;
+  opacity: 0.5;
+  width: 10px;
+  height: 10px;
+  margin: 0 5px !important;
+  transition: all 0.3s ease;
+}
+
+.recommendations-carousel .swiper-pagination-bullet-active {
+  background-color: #D32F2F; /* Color darkRed */
+  opacity: 1;
+  width: 16px;
+  border-radius: 5px;
+}

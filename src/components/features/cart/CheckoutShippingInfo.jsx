@@ -180,13 +180,13 @@ const CheckoutShippingInfo = () => {
   return (
     <div className="p-6 rounded-lg shadow-sm mb-6 relative">
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
-        {renderInput('fullName', 'Name', 'John')}
-        {renderInput('lastName', 'Last Name', 'Doe')}
-        {renderInput('address', 'Address', '123 Main Street')}
+        {renderInput('fullName', 'Name', 'Your name')}
+        {renderInput('lastName', 'Last Name', 'Your lastname')}
+        {renderInput('address', 'Address', 'Your Address')}
         
         <div className="flex space-x-4">
           <div className="w-1/2">
-            {renderInput('city', 'City', 'Sydney')}
+            {renderInput('city', 'City', 'City')}
           </div>
           <div className="w-1/2">
             {renderInput('postalCode', 'Postal Code', '2000')}

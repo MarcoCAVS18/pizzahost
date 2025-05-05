@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { FaTrash, FaEdit, FaCheck } from 'react-icons/fa';
 import Modal from '../../ui/Modal';
 import Button from '../../ui/Button';
@@ -24,74 +24,81 @@ const CartItem = ({
   flavors,
   isCustom,
   category,
-  leftImage,  // Prop para la imagen izquierda de pizza personalizada
-  rightImage,  // Prop para la imagen derecha de pizza personalizada
-  basePrice    // Añadir basePrice para pizzas personalizadas
+  leftImage,
+  rightImage,
+  basePrice
 }) => {
   const { pizzaSizes, pastaSizes } = useProducts();
-  const [pizzaToppings, setPizzaToppings] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [localSelectedSize, setLocalSelectedSize] = useState(selectedSize?.toUpperCase());
   const [selectedExtras, setSelectedExtras] = useState(extras || []);
   const [localIngredients, setLocalIngredients] = useState(ingredients);
-  
-  // Nuevo estado para almacenar los ingredientes originales
-  const [originalIngredients, setOriginalIngredients] = useState([]);
-  // Estado para rastrear ingredientes eliminados
   const [removedIngredients, setRemovedIngredients] = useState([]);
-  // Estado para controlar la carga de datos
+  const [pizzaToppings, setPizzaToppings] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Cargar toppings cuando se abre el modal
-  useEffect(() => {
+  // Cargar toppings de manera asíncrona
+  const loadToppings = useCallback(async () => {
     if (isModalOpen) {
-      const loadToppings = async () => {
-        setLoading(true);
-        try {
-          const toppings = await getPizzaToppings();
-          setPizzaToppings(toppings || []);
-        } catch (error) {
-          console.error('Error loading pizza toppings:', error);
-          setPizzaToppings([]);
-        } finally {
-          setLoading(false);
-        }
-      };
-      
-      loadToppings();
+      setLoading(true);
+      try {
+        const toppings = await getPizzaToppings();
+        setPizzaToppings(toppings || []);
+      } catch (error) {
+        console.error('Error loading pizza toppings:', error);
+        setPizzaToppings([]);
+      } finally {
+        setLoading(false);
+      }
     }
   }, [isModalOpen]);
 
-  useEffect(() => {
+  // Manejar apertura del modal
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    loadToppings();
+    
+    // Resetear estados
     setLocalSelectedSize(selectedSize?.toUpperCase());
     setSelectedExtras(extras || []);
     setLocalIngredients(ingredients || []);
-    // Guardar los ingredientes originales cuando se abre el modal
-    setOriginalIngredients(ingredients || []);
-    // Reiniciar los ingredientes removidos
     setRemovedIngredients([]);
-  }, [selectedSize, extras, ingredients]);
+  };
 
-  // Calcular el precio base según el tipo de producto
-  const calculateBasePrice = () => {
-    // Para pizzas personalizadas
+  // Calcular precio base de manera memoizada
+  const calculateBasePrice = useMemo(() => {
     if (isCustom && flavors) {
       const leftPrice = flavors.left.sizes[localSelectedSize] || 0;
       const rightPrice = flavors.right.sizes[localSelectedSize] || 0;
       return ((leftPrice + rightPrice) / 2) * 1.1;
     }
     
-    // Para productos regulares
     return sizes?.[localSelectedSize] || basePrice || price || 0;
-  };
+  }, [isCustom, flavors, localSelectedSize, sizes, basePrice, price]);
 
   // Calcular precio total
-  const sizePrice = calculateBasePrice();
-  const extrasTotal = selectedExtras.reduce((total, extra) => total + (Number(extra.price) || 0), 0);
-  const itemTotal = (Number(sizePrice) + extrasTotal) * quantity;
+  const itemTotal = useMemo(() => {
+    const extrasTotal = selectedExtras.reduce((total, extra) => 
+      total + (Number(extra.price) || 0), 0);
+    return (Number(calculateBasePrice) + extrasTotal) * quantity;
+  }, [calculateBasePrice, selectedExtras, quantity]);
 
-  // Ordenar los tamaños según el orden predefinido
-  const orderedSizes = React.useMemo(() => {
+  // Obtener nombre del tamaño
+  const getSizeName = useCallback((size) => {
+    if (!size) return '';
+    const normalizedSize = size.toUpperCase();
+    
+    const sizesObject = category === 'pasta' ? pastaSizes || {} : pizzaSizes || {};
+    
+    if (sizesObject && sizesObject[normalizedSize] && typeof sizesObject[normalizedSize] === 'object') {
+      return sizesObject[normalizedSize].name || normalizedSize;
+    }
+    
+    return normalizedSize;
+  }, [category, pastaSizes, pizzaSizes]);
+
+  // Ordenar tamaños
+  const orderedSizes = useMemo(() => {
     if (!sizes || Object.keys(sizes).length === 0) return [];
     
     return Object.entries(sizes)
@@ -99,41 +106,19 @@ const CartItem = ({
         const indexA = SIZE_ORDER.indexOf(sizeKeyA.toUpperCase());
         const indexB = SIZE_ORDER.indexOf(sizeKeyB.toUpperCase());
         
-        // Si ambos tamaños están en nuestro array de orden, usar ese orden
-        if (indexA !== -1 && indexB !== -1) {
-          return indexA - indexB;
-        }
-        
-        // Si solo uno está en el array, priorizar el que está
+        if (indexA !== -1 && indexB !== -1) return indexA - indexB;
         if (indexA !== -1) return -1;
         if (indexB !== -1) return 1;
         
-        // Si ninguno está en el array, usar orden alfabético
         return sizeKeyA.localeCompare(sizeKeyB);
       });
   }, [sizes]);
 
-  // Determinar qué conjunto de tamaños usar según la categoría
-  const getSizeName = (size) => {
-    if (!size) return '';
-    const normalizedSize = size.toUpperCase();
-    
-    // Usar el objeto de tamaños correspondiente o un objeto vacío como fallback
-    const sizesObject = category === 'pasta' ? pastaSizes || {} : pizzaSizes || {};
-    
-    // Extraer solo el nombre del tamaño o usar el código de tamaño como respaldo
-    if (sizesObject && sizesObject[normalizedSize] && typeof sizesObject[normalizedSize] === 'object') {
-      return sizesObject[normalizedSize].name || normalizedSize;
-    }
-    
-    return normalizedSize;
-  };
-
-  // Función para manejar el cambio de extras
+  // Manejar cambios de extras
   const handleExtraToggle = (extra) => {
     if (!extra || !extra.id) return;
     
-    setSelectedExtras((prev) => {
+    setSelectedExtras(prev => {
       const isSelected = prev.some((e) => e.id === extra.id);
       return isSelected
         ? prev.filter((e) => e.id !== extra.id)
@@ -141,53 +126,44 @@ const CartItem = ({
     });
   };
 
-  // Función para manejar la eliminación de ingredientes
+  // Manejar eliminación de ingredientes
   const handleIngredientToggle = (ingredientId) => {
     if (!ingredientId) return;
     
-    // Encontrar el ingrediente que está siendo eliminado
     const ingredientToRemove = localIngredients.find(ing => ing.id === ingredientId);
     
     if (ingredientToRemove && ingredientToRemove.removable) {
-      // Actualizar ingredientes locales
       setLocalIngredients(prev => prev.filter(ing => ing.id !== ingredientId));
       
-      // Añadir a la lista de ingredientes eliminados si no está ya
-      setRemovedIngredients(prev => {
-        if (!prev.some(ing => ing.id === ingredientId)) {
-          return [...prev, ingredientToRemove];
-        }
-        return prev;
-      });
+      setRemovedIngredients(prev => 
+        prev.some(ing => ing.id === ingredientId) 
+          ? prev 
+          : [...prev, ingredientToRemove]
+      );
     }
   };
 
-  // Función para restaurar un ingrediente eliminado
+  // Restaurar ingrediente
   const handleRestoreIngredient = (ingredientId) => {
-    if (!ingredientId) return;
-    
-    // Encontrar el ingrediente a restaurar
     const ingredientToRestore = removedIngredients.find(ing => ing.id === ingredientId);
     
     if (ingredientToRestore) {
-      // Añadir de nuevo a los ingredientes locales
       setLocalIngredients(prev => [...prev, ingredientToRestore]);
-      
-      // Quitar de la lista de eliminados
       setRemovedIngredients(prev => prev.filter(ing => ing.id !== ingredientId));
     }
   };
 
-  // Función para restaurar todos los ingredientes originales
+  // Restaurar todos los ingredientes
   const handleRestoreAllIngredients = () => {
-    setLocalIngredients(originalIngredients);
+    setLocalIngredients(ingredients);
     setRemovedIngredients([]);
   };
 
-  // Función para guardar los cambios
+  // Guardar cambios
   const handleSaveChanges = () => {
-    const newBasePrice = calculateBasePrice();
-    const newExtrasPrice = selectedExtras.reduce((total, extra) => total + (Number(extra.price) || 0), 0);
+    const newBasePrice = calculateBasePrice;
+    const newExtrasPrice = selectedExtras.reduce((total, extra) => 
+      total + (Number(extra.price) || 0), 0);
     
     onUpdateIngredients(id, localSelectedSize, {
       baseIngredients: localIngredients,
@@ -205,9 +181,7 @@ const CartItem = ({
         <div className="w-20 h-20 flex-shrink-0">
           {isCustom ? (
             <div className="relative w-full h-full rounded-lg overflow-hidden border border-gray-200">
-              {/* Visualización mejorada para pizzas personalizadas */}
               <div className="absolute inset-0 flex">
-                {/* Mitad izquierda */}
                 <div className="w-1/2 h-full overflow-hidden border-r border-dashed border-gray-300">
                   <img 
                     src={leftImage || (flavors?.left?.image)} 
@@ -219,7 +193,6 @@ const CartItem = ({
                     }}
                   />
                 </div>
-                {/* Mitad derecha */}
                 <div className="w-1/2 h-full overflow-hidden">
                   <img 
                     src={rightImage || (flavors?.right?.image)} 
@@ -232,7 +205,6 @@ const CartItem = ({
                   />
                 </div>
               </div>
-              {/* Línea divisoria diagonal */}
               <div 
                 className="absolute inset-0 pointer-events-none" 
                 style={{
@@ -312,7 +284,7 @@ const CartItem = ({
   
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={handleOpenModal}
                   className="text-gray-400 hover:text-darkRed transition-colors p-1"
                   title="Edit ingredients"
                 >

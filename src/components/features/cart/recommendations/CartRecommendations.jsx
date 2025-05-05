@@ -1,15 +1,36 @@
-// components/features/cart/recommendations/CartRecommendations.jsx
 import React, { useState, useEffect } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, A11y } from 'swiper/modules';
+import 'swiper/css';
+import 'swiper/css/pagination';
+
 import { useCart } from '../../../../hooks/useCart';
 import RecommendationCard from './RecommendationCard';
 import { getAllProducts } from '../../../../services/productService';
 import { toast } from 'react-toastify';
+
+import '../../../../assets/styles/global.css'
 
 const CartRecommendations = () => {
   const { items, addItem } = useCart();
   const [recommendations, setRecommendations] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+  // Añadir un listener para cambios de tamaño de ventana
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Limpiar el listener cuando el componente se desmonte
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
   
   // Cargar todos los productos al inicio
   useEffect(() => {
@@ -109,19 +130,64 @@ const CartRecommendations = () => {
 
   if (loading || !recommendations.length) return null;
 
+  // Renderizado condicional basado en el tamaño de la pantalla
   return (
-    <div className="mt-8 mb-4">
+    <div className="mt-8 mb-4 px-4">
       <h3 className="text-xl font-oldstyle italic font-bold text-darkRed mb-4">You might also like</h3>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-        {recommendations.map(product => (
-          <RecommendationCard 
-            key={product.id}
-            product={product}
-            onAddToCart={handleAddToCart}
-            preferredSize={preferredSize}
-          />
-        ))}
-      </div>
+      
+      {isMobile ? (
+        <Swiper
+          modules={[Pagination, A11y]}
+          spaceBetween={20}
+          slidesPerView="auto"
+          centeredSlides={false}
+          pagination={{ 
+            clickable: true,
+            bulletClass: 'swiper-pagination-bullet',
+            bulletActiveClass: 'swiper-pagination-bullet-active bg-darkRed'
+          }}
+          breakpoints={{
+            // Dispositivos móviles
+            320: {
+              slidesPerView: 1.3,
+              spaceBetween: 10,
+              centeredSlides: false
+            },
+            // Tablets
+            768: {
+              slidesPerView: 2.3,
+              spaceBetween: 20,
+              centeredSlides: false
+            }
+          }}
+          className="recommendations-carousel py-4"
+        >
+          {recommendations.map(product => (
+            <SwiperSlide 
+              key={product.id} 
+              className="pb-10 recommendations-slide"
+              style={{ width: 'auto', maxWidth: '90%' }}
+            >
+              <RecommendationCard 
+                product={product}
+                onAddToCart={handleAddToCart}
+                preferredSize={preferredSize}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          {recommendations.map(product => (
+            <RecommendationCard 
+              key={product.id}
+              product={product}
+              onAddToCart={handleAddToCart}
+              preferredSize={preferredSize}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -223,18 +223,18 @@ const UserShippingInfo = () => {
       <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
         <div className="flex space-x-4">
           <div className="w-1/2">
-            {renderInput('fullName', 'First Name', 'John')}
+            {renderInput('fullName', 'First Name', 'Your name')}
           </div>
           <div className="w-1/2">
-            {renderInput('lastName', 'Last Name', 'Doe')}
+            {renderInput('lastName', 'Last Name', 'Your lastname')}
           </div>
         </div>
 
-        {renderInput('address', 'Address', '123 Main Street')}
+        {renderInput('address', 'Address', 'Your address')}
 
         <div className="flex space-x-4">
           <div className="w-2/5">
-            {renderInput('city', 'City', 'Sydney')}
+            {renderInput('city', 'City', 'City')}
           </div>
           <div className="w-2/5">
             {renderSelect('state', 'State')}

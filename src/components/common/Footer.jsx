@@ -12,7 +12,7 @@ const Footer = () => {
             <img src={logoFooter} alt="Pepperoni Pizzas & Dishes" className="h-10 sm:h-12" />
           </div>
           <div>
-            <p className="font-oldstyle text-sm sm:text-base">© 2024 PizzaPro, Inc.<br/> All rights reserved.</p>
+            <p className="font-oldstyle text-sm sm:text-base">© 2024 Pepperoni, Inc.<br/> All rights reserved.</p>
           </div>
         </div>
 

@@ -25,6 +25,7 @@ const RoutesComponent = ({ setIsLoading }) => {
       <Route path="/about" element={<About setIsLoading={setIsLoading} />} />
       <Route path="/contact" element={<Contact setIsLoading={setIsLoading} />} />
       <Route path='/cart' element={<Cart setIsLoading={setIsLoading}/>} />
+      <Route path='/checkout' element={<Checkout setIsLoading={setIsLoading}/>} />
       
       {/* Authentication Routes */}
       <Route path="/user" element={<UserLog setIsLoading={setIsLoading}/>} />
@@ -45,14 +46,6 @@ const RoutesComponent = ({ setIsLoading }) => {
         element={
           <PrivateRoute>
             <Wishlist setIsLoading={setIsLoading}/>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/checkout"
-        element={
-          <PrivateRoute>
-            <Checkout />
           </PrivateRoute>
         }
       />

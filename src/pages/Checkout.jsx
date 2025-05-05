@@ -1,10 +1,16 @@
-// components/pages/Checkout.jsx
-
+// src/pages/Checkout.jsx
 import React from 'react';
-import Wait from '../components/common/Wait';
+import { usePageLoader } from '../hooks/usePageLoader';
+import CheckoutContainer from '../components/features/checkout/CheckoutContainer';
 
-const Checkout = () => {
-  return <Wait />;
+const Checkout = ({ setIsLoading }) => {
+  usePageLoader(setIsLoading, 800);
+
+  return (
+    <div>
+      <CheckoutContainer />
+    </div>
+  );
 };
 
 export default Checkout;

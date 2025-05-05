@@ -1,12 +1,13 @@
-// src/components/features/cart/CartSummary.jsx - VERSIÓN CORREGIDA
-import React, { useState, useCallback, useEffect } from 'react';
+// src/components/features/cart/CartSummary.jsx
+import React, { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useCart } from '../../../hooks/useCart';
 import Button from '../../ui/Button';
 import Separator from '../../ui/Separator';
 import ApplyCoupon from './ApplyCoupon';
 
 const CartSummary = () => {
-  // Elimino la destructuración de items ya que no lo usamos (resuelve el warning)
+  const navigate = useNavigate();
   const { total } = useCart();
   const [discountInfo, setDiscountInfo] = useState({
     discountAmount: 0,
@@ -18,61 +19,50 @@ const CartSummary = () => {
     couponRemoved: false
   });
 
-  // Usando el total calculado por el store (asegurarse de que sea un número)
+  // Using the total calculated by the store (making sure it's a number)
   const subtotal = parseFloat(total || 0);
   
-  // Define el shipping basado en el subtotal
+  // Define shipping based on subtotal
   const originalShipping = subtotal > 50 ? 0 : 5;
   
-  // Necesitamos modificar esta lógica para asegurarnos de que al remover el cupón, shipping sea originalShipping
-  let shipping = originalShipping; // Empezamos con el valor base
+  // Need to modify this logic to ensure that when coupon is removed, shipping is originalShipping
+  let shipping = originalShipping; // Start with base value
   
-  // Sólo usar el valor de discountedShipping si hay un cupón aplicado Y no ha sido removido
+  // Only use discountedShipping value if there's an applied coupon AND it hasn't been removed
   if (discountInfo.couponCode && !discountInfo.couponRemoved) {
     shipping = typeof discountInfo.discountedShipping === 'number' ? 
       discountInfo.discountedShipping : originalShipping;
   }
   
-  // Asegurar que el descuento sea un número
+  // Make sure discount is a number
   const discountAmount = typeof discountInfo.discountAmount === 'number' ? discountInfo.discountAmount : 0;
   
-  // Calcular el total final manualmente para asegurar que refleje correctamente los descuentos
+  // Calculate final total manually to ensure it correctly reflects discounts
   const finalTotal = discountInfo.couponCode && !discountInfo.couponRemoved
     ? (subtotal - discountAmount) + shipping
     : subtotal + shipping;
 
-  // Registrar valores para depuración
-  useEffect(() => {
-    console.log("CartSummary - Estado actual:", {
-      subtotal,
-      discountAmount,
-      shipping,
-      finalTotal,
-      discountInfo
-    });
-  }, [subtotal, discountAmount, shipping, finalTotal, discountInfo]);
-
-  // Manejar la aplicación de descuentos (memoizado para evitar recreaciones)
+  // Handle the application of discounts (memoized to avoid recreations)
   const handleDiscountApplied = useCallback((discountData) => {
     console.log("Discount data received:", discountData);
     
-    // Si se ha eliminado un cupón, hacer un reset completo
+    // If a coupon has been removed, do a complete reset
     if (discountData.couponRemoved) {
-      console.log("CartSummary - Detectada eliminación de cupón, reseteando estado");
+      console.log("CartSummary - Detected coupon removal, resetting state");
       const correctShipping = subtotal > 50 ? 0 : 5;
       
-      // Reset de todos los valores
+      // Reset all values
       setDiscountInfo({
         discountAmount: 0,
-        discountedShipping: correctShipping, // Usar valor recalculado
-        originalShipping: correctShipping,   // Usar valor recalculado
+        discountedShipping: correctShipping, // Use recalculated value
+        originalShipping: correctShipping,   // Use recalculated value
         total: subtotal + correctShipping,
         couponCode: null,
         couponId: null,
         couponRemoved: false
       });
       
-      // Para asegurar que la UI se actualice correctamente
+      // To ensure the UI updates correctly
       setTimeout(() => {
         setDiscountInfo(prev => ({
           ...prev,
@@ -83,12 +73,12 @@ const CartSummary = () => {
       return;
     }
     
-    // Validar los datos recibidos para evitar valores undefined
+    // Validate received data to avoid undefined values
     const validatedData = {
       discountAmount: typeof discountData.discountAmount === 'number' ? discountData.discountAmount : 0,
       discountedShipping: typeof discountData.discountedShipping === 'number' ? discountData.discountedShipping : originalShipping,
       originalShipping: typeof discountData.originalShipping === 'number' ? discountData.originalShipping : originalShipping,
-      // Calcular el total manualmente si no viene en los datos
+      // Calculate total manually if not provided in the data
       total: typeof discountData.total === 'number' 
         ? discountData.total 
         : (subtotal - (typeof discountData.discountAmount === 'number' ? discountData.discountAmount : 0)) + 
@@ -98,18 +88,23 @@ const CartSummary = () => {
       couponRemoved: false
     };
     
-    console.log("CartSummary - Datos validados:", validatedData);
+    console.log("CartSummary - Validated data:", validatedData);
     
-    // Procesamiento normal para aplicar cupón
+    // Normal processing to apply coupon
     setDiscountInfo(validatedData);
   }, [subtotal, originalShipping]);
+
+  const handleCheckout = () => {
+    // Navigate to checkout page
+    navigate('/checkout');
+  };
 
   return (
     <div className="bg-beige p-4 rounded-lg shadow-sm">
       <h2 className="text-xl font-bold mb-4 font-serif">Order Summary</h2>
 
       <div className="space-y-2 mb-4">
-        {/* Línea de subtotal - con verificación de valores */}
+        {/* Subtotal line - with value verification */}
         {discountAmount > 0 && !discountInfo.couponRemoved ? (
           <>
             <div className="flex justify-between font-serif">
@@ -130,7 +125,7 @@ const CartSummary = () => {
           </div>
         )}
         
-        {/* Línea de envío - con verificación de valores */}
+        {/* Shipping line - with value verification */}
         <div className="flex justify-between font-serif">
           <span className="text-gray-600">Shipping</span>
           <span className="font-medium">
@@ -141,10 +136,10 @@ const CartSummary = () => {
         <Separator />
       </div>
 
-      {/* Componente para aplicar cupones */}
+      {/* Component to apply coupons */}
       <ApplyCoupon onDiscountApplied={handleDiscountApplied} />
 
-      {/* Línea de total - con verificación de valores */}
+      {/* Total line - with value verification */}
       <div className="pt-4 mb-6">
         <div className="flex justify-between font-serif">
           <span className="text-lg font-bold">Total</span>
@@ -157,6 +152,7 @@ const CartSummary = () => {
         textColor="text-white"
         bgColor="bg-darkRed"
         className="w-full hover:bg-lightRed"
+        onClick={handleCheckout}
       />
     </div>
   );
