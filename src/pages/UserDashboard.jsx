@@ -2,6 +2,7 @@ import React from 'react';
 import ProfileHeader from '../components/features/dashboard/ProfileHeader';
 import UserShippingInfo from '../components/features/dashboard/UserShippingInfo';
 import RecentOrders from '../components/features/dashboard/RecentOrders';
+import CartSyncSettings from '../components/features/dashboard/CartSyncSettings';
 import { AnimationProvider } from '../context/ScrollAnimation/AnimationContext';
 import ScrollAnimation from '../context/ScrollAnimation/ScrollAnimation';
 
@@ -19,8 +20,13 @@ const UserDashboard = () => {
             <ScrollAnimation delay={400}>
               <UserShippingInfo />
             </ScrollAnimation>
+            
             <ScrollAnimation delay={600}>
               <RecentOrders />
+            </ScrollAnimation>
+            
+            <ScrollAnimation delay={800}>
+              <CartSyncSettings />
             </ScrollAnimation>
           </div>
         </div>

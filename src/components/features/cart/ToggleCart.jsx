@@ -1,25 +1,57 @@
-// components/cart/ToggleCart.jsx
+// src/components/features/cart/ToggleCart.jsx
 import React from 'react';
-import { FaShoppingCart } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
+import { FaShoppingCart, FaCloud, FaExclamationTriangle } from 'react-icons/fa';
 import { useCart } from '../../../hooks/useCart';
+import { useAuth } from '../../../context/AuthContext';
+import { useCartContext } from '../../../context/CartContext';
 
 const ToggleCart = () => {
   const { items } = useCart();
+  const { user } = useAuth();
+  const { isSyncing, syncError } = useCartContext();
+  
   const cartQuantity = items.reduce((total, item) => total + item.quantity, 0);
 
   return (
-    <div className="flex items-center justify-center w-8 h-8">
+    <Link to="/cart" className="relative flex items-center justify-center w-8 h-8 group">
       <div className="relative">
-        <FaShoppingCart className="text-xl" />
+        <FaShoppingCart className="text-xl transition-colors group-hover:text-darkRed" />
+        
+        {/* Cart quantity badge */}
         {cartQuantity > 0 && (
           <div className="absolute -top-2 -right-2 bg-darkRed text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full">
-            {cartQuantity}
+            {cartQuantity > 9 ? '9+' : cartQuantity}
+          </div>
+        )}
+        
+        {/* Sync status indicators (only show for logged in users) */}
+        {user && (
+          <div className="absolute -bottom-1 -right-1">
+            {syncError && (
+              <FaExclamationTriangle className="text-xs text-amber-500" />
+            )}
+            {isSyncing && !syncError && (
+              <FaCloud className="text-xs text-blue-500 animate-pulse" />
+            )}
           </div>
         )}
       </div>
-    </div>
+      
+      {/* Tooltip */}
+      <div className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 hidden group-hover:block">
+        <div className="bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
+          {user ? (
+            syncError 
+              ? "Cart sync error" 
+              : isSyncing 
+                ? "Syncing cart..." 
+                : "Cart"
+          ) : "Cart"}
+        </div>
+      </div>
+    </Link>
   );
 };
-
 
 export default ToggleCart;

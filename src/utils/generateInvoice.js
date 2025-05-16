@@ -2,21 +2,6 @@
 import { jsPDF } from 'jspdf';
 import logoBase64 from './logoBase64'; 
 
-// Company info
-const COMPANY_INFO = {
-  name: 'Pepperoni',
-  address: '103 Frank Street',
-  city: 'Gold Coast',
-  state: 'Queensland',
-  postalCode: '4000',
-  country: 'Australia',
-  phone: '+61 7 3000 4000',
-  email: 'support@pizzapro.com',
-  website: 'www.pizzapro.com',
-  abn: '12 345 678 901',
-  taxId: 'TAX-4321-ABCD'
-};
-
 /**
  * Generate invoice PDF from order data without using autotable plugin
  * 
@@ -29,6 +14,7 @@ const COMPANY_INFO = {
  * @param {number} orderData.tax - Tax amount
  * @param {number} orderData.shipping - Shipping cost
  * @param {number} orderData.total - Total order amount
+ * @param {Object} orderData.companyInfo - Company information
  * @returns {Object} Invoice data including PDF as data URL
  */
 export const generateInvoice = (orderData) => {
@@ -37,7 +23,21 @@ export const generateInvoice = (orderData) => {
   }
 
   try {
-    console.log("generateInvoice recibió:", orderData);
+    console.log("generateInvoice received:", orderData);
+    
+    // Company info defaults if not provided
+    const COMPANY_INFO = orderData.companyInfo || {
+      name: 'Pepperoni',
+      address: '103 Frank Street',
+      city: 'Labrador',
+      state: 'Queensland',
+      postalCode: '4215',
+      country: 'Australia',
+      phone: '+61 7 3000 4000',
+      email: 'support@pepperoni.com',
+      website: 'www.pepperoni.com',
+      abn: '12 345 678 901'
+    };
     
     // Format currency
     const formatCurrency = (amount) => {
@@ -68,22 +68,21 @@ export const generateInvoice = (orderData) => {
     // Set font
     doc.setFont('helvetica');
     
-    // Add logo
+    // Add logo - positioned at the top
     doc.addImage(logoBase64, 'PNG', 15, 15, 50, 25);
     
-    // Add company info
+    // Add company info - 3 lines below the logo as requested
     doc.setFontSize(20);
     doc.setTextColor(187, 30, 16); // darkRed color
-    doc.text('PizzaPro', 15, 25);
     
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
-    doc.text(COMPANY_INFO.address, 15, 32);
-    doc.text(`${COMPANY_INFO.city}, ${COMPANY_INFO.state} ${COMPANY_INFO.postalCode}`, 15, 37);
-    doc.text(`${COMPANY_INFO.country}`, 15, 42);
-    doc.text(`Phone: ${COMPANY_INFO.phone}`, 15, 47);
-    doc.text(`Email: ${COMPANY_INFO.email}`, 15, 52);
-    doc.text(`ABN: ${COMPANY_INFO.abn}`, 15, 57);
+    doc.text(COMPANY_INFO.address, 15, 57);
+    doc.text(`${COMPANY_INFO.city}, ${COMPANY_INFO.state} ${COMPANY_INFO.postalCode}`, 15, 62);
+    doc.text(`${COMPANY_INFO.country}`, 15, 67);
+    doc.text(`Phone: ${COMPANY_INFO.phone}`, 15, 72);
+    doc.text(`Email: ${COMPANY_INFO.email}`, 15, 77);
+    doc.text(`ABN: ${COMPANY_INFO.abn || '12 345 678 901'}`, 15, 82);
     
     // Add invoice title
     doc.setFontSize(24);
@@ -99,35 +98,35 @@ export const generateInvoice = (orderData) => {
     
     // Add line
     doc.setDrawColor(200, 200, 200);
-    doc.line(15, 65, 195, 65);
+    doc.line(15, 90, 195, 90);
     
     // Add billing info
     doc.setFontSize(12);
     doc.setTextColor(50, 50, 50);
-    doc.text('Bill To:', 15, 75);
+    doc.text('Bill To:', 15, 100);
     
     doc.setFontSize(10);
     doc.setTextColor(100, 100, 100);
     
     if (orderData.customerInfo) {
       const customer = orderData.customerInfo;
-      doc.text(`${customer.fullName || ''} ${customer.lastName || ''}`, 15, 82);
-      doc.text(customer.address || '', 15, 87);
-      doc.text(`${customer.city || ''}, ${customer.state || ''} ${customer.postalCode || ''}`, 15, 92);
-      doc.text(customer.country || 'Australia', 15, 97);
-      doc.text(`Phone: ${customer.phone || ''}`, 15, 102);
-      doc.text(`Email: ${orderData.email || customer.email || ''}`, 15, 107);
+      doc.text(`${customer.fullName || ''} ${customer.lastName || ''}`, 15, 107);
+      doc.text(customer.address || '', 15, 112);
+      doc.text(`${customer.city || ''}, ${customer.state || ''} ${customer.postalCode || ''}`, 15, 117);
+      doc.text(customer.country || 'Australia', 15, 122);
+      doc.text(`Phone: ${customer.phone || ''}`, 15, 127);
+      doc.text(`Email: ${orderData.email || customer.email || ''}`, 15, 132);
     } else {
-      doc.text('Customer information not available', 15, 82);
+      doc.text('Customer information not available', 15, 107);
     }
     
     // Add items table header manually (no autotable)
     doc.setFontSize(12);
     doc.setTextColor(50, 50, 50);
-    doc.text('Order Items:', 15, 120);
+    doc.text('Order Items:', 15, 145);
     
     // Table header
-    let startY = 125;
+    let startY = 150;
     const colWidths = [90, 25, 30, 30]; // Item, Quantity, Price, Total
     const margins = [15, 105, 130, 160, 190]; // Starting X positions for each column
     const lineHeight = 7;
@@ -174,7 +173,7 @@ export const generateInvoice = (orderData) => {
         })
       : [];
       
-    console.log("Elementos formateados para la tabla:", tableItems);
+    console.log("Items formatted for table:", tableItems);
     
     // Add table rows
     doc.setFont('helvetica', 'normal');
@@ -313,6 +312,19 @@ export const generateInvoiceData = (orderData) => {
         month: 'long',
         day: 'numeric'
       });
+
+  // Company info defaults if not provided
+  const COMPANY_INFO = orderData.companyInfo || {
+    name: 'Pepperoni',
+    address: '103 Frank Street',
+    city: 'Labrador',
+    state: 'Queensland',
+    postalCode: '4215',
+    country: 'Australia',
+    phone: '+61 7 3000 4000',
+    email: 'support@pepperoni.com',
+    website: 'www.pepperoni.com'
+  };
 
   // Create invoice data structure
   return {
