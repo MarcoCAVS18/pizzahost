@@ -9,7 +9,6 @@ import ScrollAnimation from '../../../context/ScrollAnimation/ScrollAnimation';
 import ShippingDetails from './ShippingDetails';
 import PaymentForm from './PaymentForm';
 import OrderConfirmation from './OrderConfirmation';
-import { generateInvoice } from '../../../utils/generateInvoice';
 
 const CheckoutContainer = () => {
   // State for checkout steps
@@ -20,7 +19,7 @@ const CheckoutContainer = () => {
     email: '',
     orderNumber: '',
     total: 0,
-    invoiceUrl: ''
+    items: []
   });
   const [userShippingInfo, setUserShippingInfo] = useState(null);
   // Add a flag to prevent automatic redirect after order completion
@@ -58,9 +57,10 @@ const CheckoutContainer = () => {
     setOrderData(prev => ({
       ...prev,
       orderNumber: generateOrderNumber(),
-      total: parseFloat(total)
+      total: parseFloat(total),
+      items: items.map(item => ({...item}))  // Importante: guardamos una copia de los items
     }));
-  }, [total]);
+  }, [total, items]);
 
   // Fetch user shipping info if available
   useEffect(() => {
@@ -97,26 +97,20 @@ const CheckoutContainer = () => {
   // Handle payment details submission
   const handlePaymentSubmit = (paymentData, email) => {
     try {
+      console.log('Procesando pago y generando orden...', {
+        items: items,
+        total: total
+      });
+      
       // Mark order as completed to prevent redirect
       setOrderCompleted(true);
       
-      // Generate invoice data (but not actual PDF yet)
-      const invoiceData = generateInvoice({
-        orderNumber: orderData.orderNumber,
-        date: new Date(),
-        customerInfo: orderData.shipping,
-        items,
-        subtotal: parseFloat(total),
-        tax: parseFloat(total) * 0.1,
-        shipping: orderData.shipping?.address ? 0 : 5,
-        total: parseFloat(total) * 1.1
-      });
-
+      // Update order data with payment info and items
       setOrderData(prev => ({
         ...prev,
         payment: paymentData,
         email: email || prev.email,
-        invoiceData
+        items: items.map(item => ({...item}))  // Asegurar que tenemos una copia actualizada
       }));
       
       // First set the current step to 3 (confirmation)
@@ -148,21 +142,21 @@ const CheckoutContainer = () => {
         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
           currentStep >= 1 ? 'bg-darkRed text-white' : 'bg-gray-300 text-gray-600'
         }`}>1</div>
-        <div className="ml-2 text-sm font-oldstyle">Shipping</div>
+        <div className="ml-2 text-sm font-oldstyle">Envío</div>
       </div>
       <div className={`flex-grow mx-2 h-1 ${currentStep >= 2 ? 'bg-darkRed' : 'bg-gray-300'}`}></div>
       <div className="flex items-center">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
           currentStep >= 2 ? 'bg-darkRed text-white' : 'bg-gray-300 text-gray-600'
         }`}>2</div>
-        <div className="ml-2 text-sm font-oldstyle">Payment</div>
+        <div className="ml-2 text-sm font-oldstyle">Pago</div>
       </div>
       <div className={`flex-grow mx-2 h-1 ${currentStep >= 3 ? 'bg-darkRed' : 'bg-gray-300'}`}></div>
       <div className="flex items-center">
         <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
           currentStep >= 3 ? 'bg-darkRed text-white' : 'bg-gray-300 text-gray-600'
         }`}>3</div>
-        <div className="ml-2 text-sm font-oldstyle">Confirmation</div>
+        <div className="ml-2 text-sm font-oldstyle">Confirmación</div>
       </div>
     </div>
   );
@@ -173,9 +167,9 @@ const CheckoutContainer = () => {
         <div className="container mx-auto px-4 max-w-5xl">
           <ScrollAnimation delay={0}>
             <h1 className="text-3xl font-oldstyle italic font-bold text-darkRed mb-4 text-center">
-              {currentStep === 1 ? 'Shipping Details' : 
-               currentStep === 2 ? 'Payment Information' : 
-               'Order Confirmation'}
+              {currentStep === 1 ? 'Detalles de Envío' : 
+               currentStep === 2 ? 'Información de Pago' : 
+               'Confirmación de Pedido'}
             </h1>
           </ScrollAnimation>
 
