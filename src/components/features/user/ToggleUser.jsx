@@ -1,4 +1,4 @@
-// components/features/user/ToggleUser.jsx
+// src/components/features/user/ToggleUser.jsx - Simplified without sync indicators
 import React from 'react';
 import { FaUser } from 'react-icons/fa';
 import { useAuth } from '../../../context/AuthContext';

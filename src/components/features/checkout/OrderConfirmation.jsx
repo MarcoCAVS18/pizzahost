@@ -1,4 +1,4 @@
-// src/components/features/checkout/OrderConfirmation.jsx
+// src/components/features/checkout/OrderConfirmation.jsx - Updated with email sending
 import React, { useState, useEffect } from 'react';
 import { 
   FaCheckCircle, 
@@ -11,19 +11,104 @@ import {
 } from 'react-icons/fa';
 import Button from '../../ui/Button';
 import { generateInvoice } from '../../../utils/generateInvoice';
+import { sendOrderConfirmationWithInvoice } from '../../../utils/emailService';
 
 const OrderConfirmation = ({ orderData, onContinueShopping }) => {
   const [generating, setGenerating] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [emailStatus, setEmailStatus] = useState(null);
   
   // Store order data in a state variable to ensure it's available after cart is cleared
   const [storedOrderData, setStoredOrderData] = useState(null);
+  const [invoiceData, setInvoiceData] = useState(null);
   
   // When component mounts, store the order data
   useEffect(() => {
     if (orderData && !storedOrderData) {
       setStoredOrderData({...orderData});
+      
+      // Generate invoice automatically when component loads
+      generateInvoiceAndSendEmail(orderData);
     }
   }, [orderData, storedOrderData]);
+
+  // Automatically generate invoice and send email when order is confirmed
+  const generateInvoiceAndSendEmail = async (orderData) => {
+    if (!orderData) return;
+    
+    setGenerating(true);
+    
+    try {
+      // Calculate the subtotal, tax and total correctly
+      const subtotal = typeof orderData.total === 'number' ? orderData.total : 0;
+      const tax = subtotal * 0.1; // 10% tax
+      const shipping = 0; // Free shipping
+      const total = subtotal + tax; // Total including tax
+      
+      // Prepare formatted items for the invoice
+      const formattedItems = Array.isArray(orderData.items) ? orderData.items.map(item => {
+        // Ensure each item has the necessary fields
+        return {
+          name: item.name || 'Unnamed Product',
+          quantity: item.quantity || 1,
+          price: typeof item.price === 'number' ? item.price : 
+                 typeof item.basePrice === 'number' ? item.basePrice : 0,
+          // Handle custom products
+          isCustom: item.isCustom || false,
+          flavors: item.flavors,
+          selectedSize: item.selectedSize || 'MEDIUM'
+        };
+      }) : [];
+      
+      // Create data for the invoice with correct company information
+      const invoiceData = {
+        orderNumber: orderData.orderNumber,
+        date: new Date(),
+        customerInfo: orderData.shipping,
+        email: orderData.email,
+        items: formattedItems,
+        subtotal: subtotal,
+        tax: tax,
+        shipping: shipping,
+        total: total,
+        companyInfo: {
+          name: 'Pepperoni',
+          address: '103 Frank Street',
+          city: 'Labrador',
+          state: 'Queensland',
+          postalCode: '4215',
+          country: 'Australia',
+          phone: '+61 7 3000 4000',
+          email: 'support@pepperoni.com',
+          website: 'www.pepperoni.com'
+        }
+      };
+      
+      // Generate the invoice
+      const invoice = generateInvoice(invoiceData);
+      
+      // Store invoice data for download button
+      setInvoiceData(invoice);
+      
+      // Send confirmation email with invoice attached
+      if (invoice && invoice.pdfDataUrl) {
+        setEmailStatus('sending');
+        const emailResult = await sendOrderConfirmationWithInvoice(orderData, invoice);
+        
+        if (emailResult) {
+          setEmailSent(true);
+          setEmailStatus('success');
+        } else {
+          setEmailStatus('error');
+        }
+      }
+    } catch (error) {
+      console.error('Error generating invoice and sending email:', error);
+      setEmailStatus('error');
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   const formatDate = (timestamp) => {
     const date = new Date(timestamp);
@@ -60,93 +145,20 @@ const OrderConfirmation = ({ orderData, onContinueShopping }) => {
     }).format(deliveryDate);
   };
 
-  // Generate and download the invoice
+  // Manual download of the invoice
   const handleDownloadInvoice = () => {
-    if (!storedOrderData) return;
+    if (!invoiceData || !invoiceData.pdfDataUrl) {
+      console.error('Invoice not available for download');
+      return;
+    }
     
-    setGenerating(true);
-    
-    // Small delay to ensure the UI updates before the potentially heavy processing
-    setTimeout(() => {
-      try {
-        console.log("Preparing data for invoice:", storedOrderData);
-        
-        // Calculate the subtotal, tax and total correctly
-        const subtotal = typeof storedOrderData.total === 'number' ? storedOrderData.total : 0;
-        const tax = subtotal * 0.1; // 10% tax
-        const shipping = 0; // Free shipping
-        const total = subtotal + tax; // Total including tax
-        
-        // Prepare formatted items for the invoice
-        const formattedItems = Array.isArray(storedOrderData.items) ? storedOrderData.items.map(item => {
-          // Ensure each item has the necessary fields
-          return {
-            name: item.name || 'Unnamed Product',
-            quantity: item.quantity || 1,
-            price: typeof item.price === 'number' ? item.price : 
-                   typeof item.basePrice === 'number' ? item.basePrice : 0,
-            // Handle custom products
-            isCustom: item.isCustom || false,
-            flavors: item.flavors,
-            selectedSize: item.selectedSize || 'MEDIUM'
-          };
-        }) : [];
-        
-        console.log("Calculated subtotal:", subtotal);
-        console.log("Formatted items:", formattedItems);
-        
-        // Create data for the invoice with correct company information
-        const invoiceData = {
-          orderNumber: storedOrderData.orderNumber,
-          date: new Date(),
-          customerInfo: storedOrderData.shipping,
-          email: storedOrderData.email,
-          items: formattedItems,
-          subtotal: subtotal,
-          tax: tax,
-          shipping: shipping,
-          total: total,
-          companyInfo: {
-            name: 'Pepperoni',
-            address: '103 Frank Street',
-            city: 'Labrador',
-            state: 'Queensland',
-            postalCode: '4215',
-            country: 'Australia',
-            phone: '+61 7 3000 4000',
-            email: 'support@pepperoni.com',
-            website: 'www.pepperoni.com'
-          }
-        };
-        
-        console.log("Data prepared for generateInvoice:", invoiceData);
-        
-        // Generate the invoice
-        const invoice = generateInvoice(invoiceData);
-        console.log("Invoice generated:", invoice);
-        
-        // If we successfully generated the PDF, create a URL for download
-        if (invoice && invoice.pdfDataUrl) {
-          // Create element for download
-          const link = document.createElement('a');
-          link.href = invoice.pdfDataUrl;
-          link.download = `Invoice-${storedOrderData.orderNumber}.pdf`;
-          document.body.appendChild(link);
-          link.click();
-          document.body.removeChild(link);
-          
-          console.log("Invoice downloaded successfully");
-        } else {
-          console.error("Could not generate PDF URL");
-          alert("Could not generate invoice. Please try again later.");
-        }
-      } catch (error) {
-        console.error('Error generating invoice:', error);
-        alert('Sorry, there was a problem generating your invoice. Please try again later.');
-      } finally {
-        setGenerating(false);
-      }
-    }, 100);
+    // Create element for download
+    const link = document.createElement('a');
+    link.href = invoiceData.pdfDataUrl;
+    link.download = `Invoice-${storedOrderData.orderNumber}.pdf`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
   
   // Handle continue shopping button click
@@ -178,6 +190,34 @@ const OrderConfirmation = ({ orderData, onContinueShopping }) => {
       <p className="text-gray-600 font-serif mb-2">
         Thank you for your order. We've sent your confirmation to <strong>{storedOrderData.email}</strong>
       </p>
+      
+      {/* Email status message */}
+      {emailStatus && (
+        <div className={`my-4 p-3 rounded-md max-w-md mx-auto ${
+          emailStatus === 'sending' ? 'bg-blue-50 text-blue-700' :
+          emailStatus === 'success' ? 'bg-green-50 text-green-700' :
+          'bg-red-50 text-red-700'
+        }`}>
+          {emailStatus === 'sending' && (
+            <p className="flex items-center justify-center">
+              <FaSpinner className="animate-spin mr-2" />
+              Sending order confirmation email...
+            </p>
+          )}
+          {emailStatus === 'success' && (
+            <p className="flex items-center justify-center">
+              <FaCheckCircle className="mr-2" />
+              Order confirmation email sent successfully!
+            </p>
+          )}
+          {emailStatus === 'error' && (
+            <p className="flex items-center justify-center">
+              <FaEnvelope className="mr-2" />
+              Could not send confirmation email. Please contact support.
+            </p>
+          )}
+        </div>
+      )}
       
       {/* Delivery confirmation code */}
       <div className="bg-darkRed/10 border border-darkRed rounded-lg p-4 max-w-md mx-auto mb-6">
@@ -315,7 +355,7 @@ const OrderConfirmation = ({ orderData, onContinueShopping }) => {
           bgColor="bg-transparent"
           hoverColor="hover:bg-darkRed/10"
           className="border border-darkRed flex items-center justify-center gap-2"
-          disabled={generating}
+          disabled={generating || !invoiceData}
         >
           {generating ? (
             <FaSpinner className="animate-spin mr-2" />

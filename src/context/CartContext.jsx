@@ -1,8 +1,7 @@
-// src/context/CartContext.jsx - Fixed unused vars warning
+// src/context/CartContext.jsx - Simplified for automatic sync
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
 import { getUserCart, updateCart } from '../services/cartService';
-// Removed unused saveUserCart import
 
 // Create the context
 const CartContext = createContext(null);
@@ -12,22 +11,26 @@ export const CartProvider = ({ children }) => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [syncError, setSyncError] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState(null);
+  const [isInitialSyncDone, setIsInitialSyncDone] = useState(false);
 
-  // This effect runs whenever the user auth state changes
+  // This effect runs when the user auth state changes
   useEffect(() => {
     if (!user) {
       // No user logged in, reset sync states
       setIsSyncing(false);
       setSyncError(false);
       setLastSyncTime(null);
+      setIsInitialSyncDone(false);
       return;
     }
     
-    // When user is logged in, we track sync status here
-    setLastSyncTime(new Date());
-  }, [user]);
+    // When user logs in, we'll fetch their cart automatically
+    if (user && !isInitialSyncDone) {
+      fetchCartFromFirebase();
+    }
+  }, [user, isInitialSyncDone]);
 
-  // Method to manually sync cart with Firebase
+  // Method to sync cart with Firebase
   const syncCartWithFirebase = async (items) => {
     if (!user?.uid || !items) return;
     
@@ -45,7 +48,7 @@ export const CartProvider = ({ children }) => {
     }
   };
 
-  // Fetch cart from Firebase
+  // Fetch cart from Firebase (automatically called when user logs in)
   const fetchCartFromFirebase = async () => {
     if (!user?.uid) return null;
     
@@ -55,6 +58,7 @@ export const CartProvider = ({ children }) => {
     try {
       const cartItems = await getUserCart(user.uid);
       setLastSyncTime(new Date());
+      setIsInitialSyncDone(true);
       return cartItems;
     } catch (error) {
       console.error('Error fetching cart from Firebase:', error);
@@ -71,7 +75,8 @@ export const CartProvider = ({ children }) => {
     syncError,
     lastSyncTime,
     syncCartWithFirebase,
-    fetchCartFromFirebase
+    fetchCartFromFirebase,
+    isInitialSyncDone
   };
 
   return (

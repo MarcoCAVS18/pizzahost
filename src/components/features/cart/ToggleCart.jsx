@@ -1,15 +1,11 @@
-// src/components/features/cart/ToggleCart.jsx
+// src/components/features/cart/ToggleCart.jsx - Simplified without sync indicators
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { FaShoppingCart, FaCloud, FaExclamationTriangle } from 'react-icons/fa';
+import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from '../../../hooks/useCart';
-import { useAuth } from '../../../context/AuthContext';
-import { useCartContext } from '../../../context/CartContext';
 
 const ToggleCart = () => {
   const { items } = useCart();
-  const { user } = useAuth();
-  const { isSyncing, syncError } = useCartContext();
   
   const cartQuantity = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -24,30 +20,12 @@ const ToggleCart = () => {
             {cartQuantity > 9 ? '9+' : cartQuantity}
           </div>
         )}
-        
-        {/* Sync status indicators (only show for logged in users) */}
-        {user && (
-          <div className="absolute -bottom-1 -right-1">
-            {syncError && (
-              <FaExclamationTriangle className="text-xs text-amber-500" />
-            )}
-            {isSyncing && !syncError && (
-              <FaCloud className="text-xs text-blue-500 animate-pulse" />
-            )}
-          </div>
-        )}
       </div>
       
       {/* Tooltip */}
       <div className="absolute -bottom-7 left-1/2 transform -translate-x-1/2 hidden group-hover:block">
         <div className="bg-gray-800 text-white text-xs rounded py-1 px-2 whitespace-nowrap">
-          {user ? (
-            syncError 
-              ? "Cart sync error" 
-              : isSyncing 
-                ? "Syncing cart..." 
-                : "Cart"
-          ) : "Cart"}
+          Cart
         </div>
       </div>
     </Link>

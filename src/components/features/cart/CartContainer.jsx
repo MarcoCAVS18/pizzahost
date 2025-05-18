@@ -1,12 +1,13 @@
-// src/components/features/cart/CartContainer.jsx - Fixed unused vars warning
+// src/components/features/cart/CartContainer.jsx - With existing Loader component
 import React, { useState, useEffect } from 'react';
 import { useCart } from '../../../hooks/useCart';
 import { useAuth } from '../../../context/AuthContext';
 import EmptyCartMessage from './EmptyCartMessage';
 import CartContent from './CartContent';
+import Loader from '../../ui/Loader'; // Using existing Loader component
 
 const CartContainer = () => {
-  const { isEmpty } = useCart(); // Removed unused 'items' variable
+  const { isEmpty } = useCart();
   const { user } = useAuth();
   const [isInitialLoad, setIsInitialLoad] = useState(true);
 
@@ -25,9 +26,9 @@ const CartContainer = () => {
     return (
       <div className="min-h-screen p-6 bg-beige mt-20 flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-darkRed mb-4"></div>
-          <p className="text-xl font-oldstyle text-gray-600">
-            {user ? "Syncing your cart..." : "Loading your cart..."}
+          <Loader />
+          <p className="text-xl font-oldstyle text-gray-600 mt-4">
+            {user ? "Loading your cart..." : "Loading your cart..."}
           </p>
         </div>
       </div>

@@ -32,12 +32,17 @@ const CheckoutShippingInfo = () => {
     phone: '',
     email: '',
   });
+  // Add loading state to prevent multiple fetches
+  const [isLoading, setIsLoading] = useState(false);
+  // Track if info has been loaded once
+  const [infoLoaded, setInfoLoaded] = useState(false);
 
   // Fetch shipping info if user is logged in
   useEffect(() => {
     const fetchShippingInfo = async () => {
-      if (user?.uid) {
+      if (user?.uid && !infoLoaded && !isLoading) {
         try {
+          setIsLoading(true);
           const data = await getUserShippingInfo(user.uid);
           if (data) {
             setShippingInfo(prevState => ({
@@ -49,19 +54,21 @@ const CheckoutShippingInfo = () => {
           }
           // If user is logged in, don't show login options
           setShowLoginOptions(false);
+          // Mark as loaded to prevent re-fetching
+          setInfoLoaded(true);
         } catch (error) {
           console.error('Failed to fetch user shipping info:', error);
+        } finally {
+          setIsLoading(false);
         }
-      } else {
+      } else if (!user) {
         // If user is not logged in, show login options
         setShowLoginOptions(true);
       }
     };
 
     fetchShippingInfo();
-    // Añadido shippingInfo al array de dependencias para corregir el warning de ESLint
-    // No se usa dentro del efecto, pero ESLint lo detecta como dependencia
-  }, [user, shippingInfo]);
+  }, [user, infoLoaded]); // Only depend on user and infoLoaded, not on shippingInfo
 
   // Validation functions
   const validateField = (name, value) => {

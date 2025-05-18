@@ -1,7 +1,7 @@
-// src/hooks/useCart.js - Fixed infinite loop issue
+// src/hooks/useCart.js - Improved with automatic sync
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { useEffect, useCallback, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { getUserCart, syncCart, clearCart as clearFirebaseCart } from '../services/cartService';
 
@@ -39,13 +39,6 @@ const useCartStore = create(
             isCustom: true,
             category: 'pizza',
           };
-
-          console.log('Adding custom pizza to cart:', {
-            price: priceAsNumber,
-            totalPrice: customPizza.totalPrice,
-            size: product.size,
-            quantity: product.quantity
-          });
 
           set((state) => ({
             items: [...state.items, customPizza],
@@ -123,23 +116,10 @@ const useCartStore = create(
       })),
 
       removeItem: ({ id, selectedSize }) => {
-        console.log('Removing item from cart:', { id, selectedSize });
-        
         set((state) => {
-          const itemToRemove = state.items.find(
-            (item) => item.id === id && item.selectedSize === selectedSize
-          );
-          
-          if (!itemToRemove) {
-            console.error('Error: Item not found for removal', { id, selectedSize });
-            return { items: state.items };
-          }
-          
           const newItems = state.items.filter(
             (item) => !(item.id === id && item.selectedSize === selectedSize)
           );
-          
-          console.log('Remaining items after removal:', newItems.length);
           
           return { 
             items: newItems,
@@ -227,8 +207,8 @@ const useCartStore = create(
       }),
 
       // Methods for Firebase synchronization
-      loadCartFromFirebase: (items) => set({
-        items,
+      loadCartFromFirebase: (items = []) => set({
+        items: items || [],
         synced: true, // Mark as synced after loading
         initialLoadComplete: true // Mark initial load as complete
       }),
@@ -252,78 +232,89 @@ export const useCart = () => {
   const store = useCartStore();
   const { user } = useAuth();
   const initialLoadRef = useRef(false);
+  const syncTimeoutRef = useRef(null);
   const syncInProgressRef = useRef(false);
 
-  // Create memoized functions to avoid dependency issues
-  const loadCart = useCallback(async (userId) => {
-    // Prevent multiple simultaneous loads
-    if (syncInProgressRef.current) {
-      return;
-    }
-    
-    // Set the flag to prevent concurrent loads
-    syncInProgressRef.current = true;
-    
-    try {
-      console.log("Loading cart from Firebase for user:", userId);
-      const firebaseCart = await getUserCart(userId);
-      
-      if (firebaseCart.length > 0) {
-        // If Firebase cart exists, replace local cart
-        store.loadCartFromFirebase(firebaseCart);
-        console.log("Cart loaded from Firebase:", firebaseCart.length, "items");
-      } else if (store.items.length > 0) {
-        // If local cart has items but Firebase doesn't, save local cart to Firebase
-        await syncCart(userId, store.items);
-        store.setSynced(true);
-        console.log("Local cart saved to Firebase:", store.items.length, "items");
+  // Clear any pending sync timeouts when component unmounts
+  useEffect(() => {
+    return () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
       }
-      
-      // Mark initial load as complete
-      store.setInitialLoadComplete(true);
-      initialLoadRef.current = true;
-    } catch (error) {
-      console.error("Error syncing cart with Firebase:", error);
-    } finally {
-      // Clear the flag
-      syncInProgressRef.current = false;
-    }
-  }, [store]);
-
-  const syncCartWithFirebase = useCallback(async (userId, items, isSynced) => {
-    // Only perform sync if not already synced and not in progress
-    if (userId && items && !isSynced && !syncInProgressRef.current) {
-      syncInProgressRef.current = true;
-      
-      try {
-        console.log("Syncing cart with Firebase...");
-        await syncCart(userId, items);
-        store.setSynced(true);
-        console.log("Cart synced with Firebase successfully");
-      } catch (error) {
-        console.error("Error syncing cart with Firebase:", error);
-      } finally {
-        syncInProgressRef.current = false;
-      }
-    }
-  }, [store]);
+    };
+  }, []);
 
   // Load cart from Firebase when user logs in - ONCE only
   useEffect(() => {
-    if (user?.uid && !initialLoadRef.current && !store.initialLoadComplete) {
-      loadCart(user.uid);
-    }
-  }, [user, loadCart, store.initialLoadComplete]);
+    const loadCart = async () => {
+      if (!user?.uid || initialLoadRef.current || store.initialLoadComplete) {
+        return;
+      }
+      
+      // Set the flag to prevent concurrent loads
+      initialLoadRef.current = true;
+      
+      try {
+        console.log("Loading cart from Firebase for user:", user.uid);
+        const firebaseCart = await getUserCart(user.uid);
+        
+        if (Array.isArray(firebaseCart) && firebaseCart.length > 0) {
+          // If Firebase cart exists, replace local cart
+          store.loadCartFromFirebase(firebaseCart);
+          console.log("Cart loaded from Firebase:", firebaseCart.length, "items");
+        } else if (store.items.length > 0) {
+          // If local cart has items but Firebase doesn't, save local cart to Firebase
+          await syncCart(user.uid, store.items);
+          store.setSynced(true);
+          console.log("Local cart saved to Firebase:", store.items.length, "items");
+        }
+        
+        // Mark initial load as complete
+        store.setInitialLoadComplete(true);
+      } catch (error) {
+        console.error("Error syncing cart with Firebase:", error);
+      }
+    };
 
-  // Sync cart with Firebase when it changes and user is logged in
-  useEffect(() => {
-    if (user?.uid && initialLoadRef.current && !store.synced) {
-      syncCartWithFirebase(user.uid, store.items, store.synced);
+    if (user?.uid) {
+      loadCart();
     }
-  }, [user, store.items, store.synced, syncCartWithFirebase]);
+  }, [user, store]);
+
+  // Auto-sync cart with Firebase when it changes and user is logged in
+  useEffect(() => {
+    // Debounce sync to avoid too many requests
+    const syncWithDebounce = () => {
+      if (syncTimeoutRef.current) {
+        clearTimeout(syncTimeoutRef.current);
+      }
+      
+      syncTimeoutRef.current = setTimeout(async () => {
+        if (!user?.uid || syncInProgressRef.current || store.synced) {
+          return;
+        }
+        
+        syncInProgressRef.current = true;
+        
+        try {
+          await syncCart(user.uid, store.items);
+          store.setSynced(true);
+          console.log("Cart automatically synced with Firebase");
+        } catch (error) {
+          console.error("Error auto-syncing cart with Firebase:", error);
+        } finally {
+          syncInProgressRef.current = false;
+        }
+      }, 2000); // 2 second debounce
+    };
+    
+    if (user?.uid && !store.synced && store.initialLoadComplete) {
+      syncWithDebounce();
+    }
+  }, [user, store.items, store.synced, store.initialLoadComplete]);
 
   // Handle cart clearing with Firebase
-  const clearCartWithSync = useCallback(async () => {
+  const clearCartWithSync = async () => {
     store.clearCart();
     
     if (user?.uid) {
@@ -334,7 +325,7 @@ export const useCart = () => {
         console.error("Error clearing cart in Firebase:", error);
       }
     }
-  }, [user, store]);
+  };
 
   return {
     ...store,
