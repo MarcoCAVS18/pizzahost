@@ -15,7 +15,6 @@ import { sendOrderConfirmationWithInvoice } from '../../../utils/emailService';
 
 const OrderConfirmation = ({ orderData, onContinueShopping }) => {
   const [generating, setGenerating] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const [emailStatus, setEmailStatus] = useState(null);
   
   // Store order data in a state variable to ensure it's available after cart is cleared
@@ -96,7 +95,6 @@ const OrderConfirmation = ({ orderData, onContinueShopping }) => {
         const emailResult = await sendOrderConfirmationWithInvoice(orderData, invoice);
         
         if (emailResult) {
-          setEmailSent(true);
           setEmailStatus('success');
         } else {
           setEmailStatus('error');

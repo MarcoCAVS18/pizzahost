@@ -1,14 +1,10 @@
 // src/services/cartService.js
 import { db } from './firebase';
-import { 
-  doc, 
-  collection, 
-  setDoc, 
-  getDoc, 
-  query, 
-  where, 
-  getDocs, 
-  serverTimestamp 
+import {
+  doc,
+  setDoc,
+  getDoc,
+  serverTimestamp
 } from 'firebase/firestore';
 
 /**
@@ -187,7 +183,7 @@ export const updateUserCart = updateCart;
 export const clearUserCart = clearCart;
 
 // Export default object with all functions
-export default {
+const cartService = {
   createCart,
   getOrCreateCart,
   getUserCart,
@@ -198,3 +194,5 @@ export default {
   updateUserCart,
   clearUserCart
 };
+
+export default cartService;

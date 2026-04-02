@@ -166,7 +166,9 @@ export const sendOrderConfirmationWithInvoice = async (orderData, invoiceData) =
   return await sendOrderConfirmationEmail(orderData, invoiceData.pdfDataUrl);
 };
 
-export default {
+const emailService = {
   sendOrderConfirmationEmail,
   sendOrderConfirmationWithInvoice
 };
+
+export default emailService;

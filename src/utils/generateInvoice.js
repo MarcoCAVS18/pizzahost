@@ -127,7 +127,6 @@ export const generateInvoice = (orderData) => {
     
     // Table header
     let startY = 150;
-    const colWidths = [90, 25, 30, 30]; // Item, Quantity, Price, Total
     const margins = [15, 105, 130, 160, 190]; // Starting X positions for each column
     const lineHeight = 7;
     

@@ -68,7 +68,8 @@ const CheckoutShippingInfo = () => {
     };
 
     fetchShippingInfo();
-  }, [user, infoLoaded]); // Only depend on user and infoLoaded, not on shippingInfo
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, infoLoaded]);
 
   // Validation functions
   const validateField = (name, value) => {

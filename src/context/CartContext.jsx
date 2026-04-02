@@ -28,6 +28,7 @@ export const CartProvider = ({ children }) => {
     if (user && !isInitialSyncDone) {
       fetchCartFromFirebase();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, isInitialSyncDone]);
 
   // Method to sync cart with Firebase

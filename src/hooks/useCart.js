@@ -311,6 +311,7 @@ export const useCart = () => {
     if (user?.uid && !store.synced && store.initialLoadComplete) {
       syncWithDebounce();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, store.items, store.synced, store.initialLoadComplete]);
 
   // Handle cart clearing with Firebase
